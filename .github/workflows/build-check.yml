@@ -1,0 +1,27 @@
+name: Build Check
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for unreplaced placeholder values
+        run: |
+          if grep -nE "pages\.dev|YOUR_TOKEN|YOUR_EMAIL|example\.com" index.html; then
+            echo "::error::index.html contains placeholder values that must be replaced before merging."
+            exit 1
+          fi
+          echo "No placeholders found."
+      - name: Validate wrangler.jsonc syntax
+        run: |
+          node -e "
+            const fs=require('fs');
+            const c=fs.readFileSync('wrangler.jsonc','utf8').replace(/\/\/.*$/gm,'');
+            JSON.parse(c);
+            console.log('wrangler.jsonc OK');
+          "
+      - name: Validate manifest.json syntax
+        run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest.json OK')"
