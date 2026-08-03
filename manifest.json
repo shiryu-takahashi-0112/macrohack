@@ -1,0 +1,17 @@
+{
+  "name": "MACROHACK（マクロハック）",
+  "short_name": "MACROHACK",
+  "description": "セブンの商品で狙ったPFCバランスを組む、筋トレ飯提案アプリ。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#DD0000",
+  "theme_color": "#DD0000",
+  "lang": "ja",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

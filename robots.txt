@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://macrohack.mhack.workers.dev/sitemap.xml

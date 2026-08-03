@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MACROHACK（マクロハック）｜コンビニで狙ったPFCを組む</title>
+<meta name="description" content="筋トレユーザー向け。コンビニ（セブン‑イレブン／ファミリーマート／ローソン）の商品で、増量・減量・維持の目標に合わせた栄養バランス（PFC）のメニューを無料で提案します。">
+
+<!-- ▼▼ 公開後、下記の https://macrohack.pages.dev を自分の実際のURLに置き換えてください ▼▼ -->
+<link rel="canonical" href="https://macrohack.mhack.workers.dev/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MACROHACK">
+<meta property="og:title" content="MACROHACK（マクロハック）｜コンビニで狙ったPFCを組む">
+<meta property="og:description" content="コンビニの商品で、増量・減量・維持に合わせた栄養バランスを無料で提案。筋トレ飯の献立に。">
+<meta property="og:url" content="https://macrohack.mhack.workers.dev/">
+<meta property="og:image" content="https://macrohack.mhack.workers.dev/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MACROHACK（マクロハック）｜コンビニで狙ったPFCを組む">
+<meta name="twitter:description" content="コンビニの商品で、増量・減量・維持に合わせた栄養バランスを無料で提案。筋トレ飯の献立に。">
+<meta name="twitter:image" content="https://macrohack.mhack.workers.dev/og-image.png">
+<!-- ▲▲ 置き換えここまで ▲▲ -->
+<meta name="theme-color" content="#DD0000">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-16.png" sizes="16x16" type="image/png">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MACROHACK">
+<style>
+  :root{
+    --red:#DD0000; --red-dark:#a30000; --red-tint:#fdeaea; --red-line:#f6cccc;
+    --bg:#f7f2f2; --card:#fff; --ink:#241a1a; --sub:#8a7c7c;
+    --line:#ece2e2;
+    --pro:#DD0000; --fat:#ff8a1e; --carb:#ffbe2e; --cal:#6b6b6b;
+    --shadow:0 2px 14px rgba(120,0,0,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:520px;margin:0 auto;padding:0 16px 90px}
+  header{background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;
+    padding:26px 16px 22px;text-align:center}
+  .logo-wrap{max-width:230px;margin:0 auto}
+  .logo-wrap svg{width:100%;height:auto;display:block}
+  header .read{font-size:12px;letter-spacing:.32em;opacity:.9;font-weight:700;margin-top:8px}
+  header .tagline{font-size:12.5px;opacity:.92;margin-top:8px}
+  .card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:18px;margin-top:16px}
+  .card h2{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .card h2 .n{background:var(--red);color:#fff;width:22px;height:22px;border-radius:50%;
+    display:grid;place-items:center;font-size:12px;font-weight:700}
+  label{font-size:13px;color:var(--sub);display:block;margin-bottom:6px;font-weight:600}
+  .goals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .goal{border:2px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;
+    transition:.15s;background:#fff}
+  .goal .emoji{font-size:22px}
+  .goal .t{font-size:13px;font-weight:700;margin-top:2px}
+  .goal .d{font-size:10.5px;color:var(--sub)}
+  .goal.sel{border-color:var(--red);background:var(--red-tint)}
+  .goal.sel .t{color:var(--red)}
+  .row{display:flex;gap:10px;margin-top:14px}
+  .row>div{flex:1}
+  input[type=number],select{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;
+    font-size:15px;background:#fff;color:var(--ink)}
+  input[type=number]:focus,select:focus{outline:none;border-color:var(--red)}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+  .chip{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--line);border-radius:20px;
+    padding:6px 12px;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;background:#fff;margin:0}
+  .chip input{display:none}
+  .chip.on{border-color:var(--red);background:var(--red-tint);color:var(--red)}
+  .adv-toggle{font-size:12.5px;color:var(--red);font-weight:700;cursor:pointer;margin-top:14px;display:inline-block}
+  .adv-box{margin-top:10px}
+  .adv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .adv-grid label{font-size:11px;text-align:center;margin-bottom:3px}
+  .btn{width:100%;background:var(--red);color:#fff;border:none;padding:15px;border-radius:12px;
+    font-size:16px;font-weight:800;cursor:pointer;margin-top:18px;transition:.15s}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#fff;color:var(--red);border:2px solid var(--red)}
+  .badge{display:inline-block;background:var(--red-tint);color:var(--red);font-size:10.5px;font-weight:700;
+    padding:2px 8px;border-radius:20px;margin-left:6px}
+  .tip{font-size:12px;color:var(--ink);background:#fff6e6;border-radius:8px;padding:8px 10px;margin:10px 0 4px}
+  /* 達成率 */
+  .ach{margin:10px 0 4px}
+  .ach-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .ach-k{font-size:12px;color:var(--sub);width:64px;flex-shrink:0;font-weight:600}
+  .ach-track{flex:1;height:9px;background:var(--line);border-radius:6px;overflow:hidden}
+  .ach-fill{height:100%;border-radius:6px}
+  .ach-v{font-size:11.5px;color:var(--ink);width:120px;flex-shrink:0;text-align:right;white-space:nowrap}
+  .ach-v em{font-style:normal;color:var(--sub);font-size:10.5px}
+  .ach-v em.over{color:var(--red)}
+  /* 並び替え */
+  .sortbar{display:flex;align-items:center;gap:8px;margin:6px 0}
+  .sortbar select{width:auto;padding:6px 10px;font-size:12.5px;border-radius:8px}
+  .sortbar span{font-size:12px;color:var(--sub);font-weight:600}
+  /* 商品 */
+  .item{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:none}
+  .item.locked{background:var(--red-tint);border-radius:10px;padding:12px 8px;border-bottom:1px solid transparent}
+  .item .ic{width:44px;height:44px;border-radius:10px;background:var(--red-tint);display:grid;place-items:center;font-size:22px;flex-shrink:0}
+  .item.locked .ic{background:#fff}
+  .item .info{flex:1;min-width:0}
+  .item .nm{font-size:14px;font-weight:700}
+  .item .mc{font-size:11.5px;color:var(--sub)}
+  .store-badge{display:inline-block;font-size:9.5px;font-weight:700;color:var(--sub);background:var(--line);border-radius:8px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+  .item-right{text-align:right;flex-shrink:0}
+  .item .pr{font-size:14px;font-weight:800;color:var(--red)}
+  .qty{display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:4px}
+  .qty button{border:1px solid var(--line);background:#fff;border-radius:7px;width:24px;height:24px;font-size:15px;
+    line-height:1;cursor:pointer;color:var(--red);font-weight:800}
+  .qty span{font-size:12px;font-weight:700;min-width:26px;text-align:center}
+  .item-btns{display:flex;gap:4px;justify-content:flex-end;margin-top:5px}
+  .ibtn{border:1px solid var(--line);background:#fff;border-radius:8px;width:30px;height:26px;font-size:13px;
+    cursor:pointer;display:grid;place-items:center;transition:.12s}
+  .ibtn:active{transform:scale(.9)}
+  .ibtn.on{background:var(--red);border-color:var(--red)}
+  .totals{background:var(--red-tint);border-radius:12px;padding:14px;margin-top:14px;display:flex;justify-content:space-around;text-align:center}
+  .totals .v{font-size:18px;font-weight:800;color:var(--red)}
+  .totals .k{font-size:11px;color:var(--sub)}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .actions .btn{margin-top:0;padding:12px;font-size:13.5px}
+  .actions .btn.full{grid-column:1 / -1}
+  .warn{font-size:12px;color:var(--red);background:var(--red-tint);border-radius:8px;padding:8px 10px;margin-top:10px}
+  .hidden{display:none}
+  .note{font-size:11px;color:var(--sub);text-align:center;margin-top:20px;line-height:1.6}
+  .note a{color:var(--red);font-weight:700}
+  /* シェア */
+  .share{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .share-label{font-size:12px;color:var(--sub);font-weight:700;text-align:center;margin-bottom:10px}
+  .share-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .sbtn{border:none;border-radius:12px;cursor:pointer;color:#fff;font-weight:800;
+    width:58px;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;font-size:16px;transition:.15s}
+  .sbtn span{font-size:10px;font-weight:700}
+  .sbtn:active{transform:scale(.94)}
+  .sbtn.save{background:var(--red)}
+  .sbtn.x{background:#000}
+  .sbtn.line{background:#06c755;font-size:13px}
+  .sbtn.copy{background:#6b6b6b}
+  /* タブ・保存・履歴・今日 */
+  .tabs{display:flex;gap:8px;margin-bottom:12px}
+  .tab{flex:1;text-align:center;padding:8px;border:1.5px solid var(--line);border-radius:10px;font-size:13px;
+    font-weight:700;color:var(--sub);cursor:pointer;background:#fff}
+  .tab.on{border-color:var(--red);background:var(--red-tint);color:var(--red)}
+  .saved{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .saved:last-child{border-bottom:none}
+  .saved .sg{width:38px;height:38px;border-radius:9px;background:var(--red-tint);color:var(--red);
+    display:grid;place-items:center;font-size:12px;font-weight:800;flex-shrink:0}
+  .saved .sinfo{flex:1;min-width:0}
+  .saved .sinfo .st{font-size:13px;font-weight:700}
+  .saved .sinfo .sd{font-size:11px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .saved .sdel{border:none;background:none;color:var(--sub);font-size:16px;cursor:pointer;padding:4px}
+  .empty{font-size:12.5px;color:var(--sub);text-align:center;padding:14px 0}
+  .day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .day-reset{font-size:11.5px;color:var(--sub);background:none;border:none;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-wrap">
+    <svg viewBox="0 0 800 116" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MACROHACK">
+      <path d="M89.16 2.32999V113.45H63.9L63.87 38.43L53.81 113.45H35.9L25.3 40.15L25.27 113.45H0V2.32999H37.39C38.5 9.00999 39.64 16.89 40.82 25.95L44.92 54.21L51.56 2.32999H89.15H89.16Z" fill="white"/>
+      <path d="M165.09 2.32999L181.61 113.45H152.08L150.53 93.48H140.19L138.45 113.45H108.58L123.32 2.32999H165.08H165.09ZM149.77 73.78C148.31 61.19 146.84 45.64 145.37 27.11C142.43 48.39 140.58 63.95 139.82 73.78H149.77Z" fill="white"/>
+      <path d="M266.74 50.72H237.84V31.41C237.84 25.79 237.53 22.29 236.91 20.9C236.29 19.51 234.93 18.81 232.83 18.81C230.45 18.81 228.94 19.66 228.3 21.35C227.66 23.04 227.34 26.7 227.34 32.33V83.94C227.34 89.34 227.66 92.86 228.3 94.51C228.94 96.16 230.38 96.98 232.62 96.98C234.86 96.98 236.18 96.16 236.84 94.5C237.5 92.85 237.84 88.97 237.84 82.87V68.9H266.74V73.23C266.74 84.73 265.93 92.89 264.3 97.7C262.68 102.51 259.08 106.73 253.52 110.35C247.96 113.97 241.11 115.78 232.96 115.78C224.81 115.78 217.52 114.25 212.03 111.18C206.54 108.12 202.9 103.87 201.12 98.45C199.34 93.03 198.44 84.87 198.44 73.98V41.52C198.44 33.51 198.71 27.51 199.26 23.5C199.81 19.49 201.44 15.64 204.17 11.93C206.89 8.22999 210.67 5.30999 215.49 3.17999C220.32 1.04999 225.86 -0.0100098 232.13 -0.0100098C240.64 -0.0100098 247.66 1.63999 253.2 4.92999C258.74 8.21999 262.37 12.32 264.11 17.23C265.85 22.14 266.72 29.78 266.72 40.16V50.72H266.74Z" fill="white"/>
+      <path d="M288.46 2.32999H308.91C322.54 2.32999 331.78 2.85999 336.6 3.90999C341.43 4.95999 345.36 7.64999 348.4 11.97C351.44 16.29 352.96 23.19 352.96 32.66C352.96 41.31 351.88 47.12 349.73 50.09C347.58 53.06 343.35 54.85 337.03 55.44C342.75 56.86 346.59 58.76 348.56 61.14C350.53 63.52 351.75 65.7 352.23 67.69C352.71 69.68 352.95 75.16 352.95 84.13V113.44H326.11V76.51C326.11 70.56 325.64 66.88 324.7 65.46C323.76 64.04 321.3 63.33 317.32 63.33V113.43H288.42V2.32999H288.46ZM317.35 21.35V46.06C320.6 46.06 322.88 45.61 324.18 44.72C325.48 43.83 326.14 40.94 326.14 36.04V29.93C326.14 26.41 325.51 24.1 324.25 23C322.99 21.9 320.69 21.35 317.35 21.35Z" fill="white"/>
+      <path d="M441.56 67.4C441.56 78.56 441.3 86.47 440.77 91.11C440.24 95.75 438.6 100 435.83 103.84C433.06 107.68 429.32 110.63 424.61 112.69C419.9 114.75 414.41 115.78 408.14 115.78C401.87 115.78 396.85 114.81 392.11 112.86C387.37 110.91 383.57 108 380.68 104.11C377.8 100.22 376.08 95.99 375.53 91.41C374.98 86.83 374.71 78.83 374.71 67.39V48.38C374.71 37.22 374.97 29.31 375.5 24.67C376.03 20.03 377.67 15.78 380.44 11.94C383.21 8.1 386.95 5.15 391.66 3.09C396.37 1.03 401.86 0 408.13 0C414.08 0 419.42 0.97 424.16 2.92C428.9 4.87 432.7 7.78 435.59 11.67C438.47 15.56 440.19 19.79 440.74 24.37C441.29 28.95 441.56 36.95 441.56 48.39V67.4ZM412.66 30.89C412.66 25.72 412.37 22.41 411.8 20.97C411.23 19.53 410.05 18.81 408.27 18.81C406.76 18.81 405.6 19.39 404.8 20.56C404 21.73 403.6 25.17 403.6 30.89V82.78C403.6 89.23 403.86 93.21 404.39 94.72C404.92 96.23 406.14 96.98 408.06 96.98C409.98 96.98 411.29 96.11 411.84 94.37C412.39 92.63 412.66 88.49 412.66 81.95V30.89Z" fill="white"/>
+      <path d="M530.29 2.32999V113.45H501.39V66.78H492.74V113.45H463.84V2.32999H492.74V42.07H501.39V2.32999H530.29Z" fill="white"/>
+      <path d="M606.17 2.32999L622.69 113.45H593.16L591.61 93.48H581.27L579.53 113.45H549.66L564.4 2.32999H606.16H606.17ZM590.86 73.78C589.4 61.19 587.93 45.64 586.46 27.11C583.52 48.39 581.67 63.95 580.91 73.78H590.86Z" fill="white"/>
+      <path d="M707.82 50.72H678.93V31.41C678.93 25.79 678.62 22.29 678 20.9C677.38 19.51 676.02 18.81 673.92 18.81C671.54 18.81 670.03 19.66 669.39 21.35C668.75 23.04 668.43 26.7 668.43 32.33V83.94C668.43 89.34 668.75 92.86 669.39 94.51C670.03 96.16 671.47 96.98 673.71 96.98C675.95 96.98 677.27 96.16 677.93 94.5C678.59 92.85 678.93 88.97 678.93 82.87V68.9H707.82V73.23C707.82 84.73 707.01 92.89 705.38 97.7C703.75 102.51 700.16 106.73 694.6 110.35C689.04 113.97 682.19 115.78 674.04 115.78C665.89 115.78 658.6 114.25 653.11 111.18C647.62 108.12 643.98 103.87 642.2 98.45C640.42 93.03 639.52 84.87 639.52 73.98V41.52C639.52 33.51 639.79 27.51 640.34 23.5C640.89 19.49 642.52 15.64 645.25 11.93C647.97 8.22999 651.75 5.30999 656.58 3.17999C661.41 1.04999 666.95 -0.0100098 673.22 -0.0100098C681.73 -0.0100098 688.75 1.63999 694.29 4.92999C699.83 8.21999 703.46 12.32 705.2 17.23C706.94 22.14 707.81 29.78 707.81 40.16V50.72H707.82Z" fill="white"/>
+      <path d="M798.42 2.32999L781.84 52.5L799.99 113.45H770.13L758.43 65.82V113.45H729.53V2.32999H758.43V45.5L771.3 2.32999H798.41H798.42Z" fill="white"/>
+    </svg>
+  </div>
+  <div class="read">マクロハック</div>
+  <p class="tagline">コンビニの商品で、狙ったPFCバランスを組む</p>
+</header>
+
+<div class="wrap">
+  <!-- 入力カード -->
+  <div class="card" id="inputCard">
+    <h2><span class="n">1</span>目標を選ぶ</h2>
+    <div class="goals" id="goals">
+      <div class="goal" data-goal="bulk"><div class="emoji">🍚</div><div class="t">増量</div><div class="d">バルクアップ</div></div>
+      <div class="goal sel" data-goal="maintain"><div class="emoji">⚖️</div><div class="t">維持</div><div class="d">キープ</div></div>
+      <div class="goal" data-goal="cut"><div class="emoji">🔥</div><div class="t">減量</div><div class="d">絞る</div></div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>体重 (kg)</label>
+        <input type="number" id="weight" value="70" min="35" max="150">
+      </div>
+      <div>
+        <label>1食の予算 (円)</label>
+        <select id="budget">
+          <option value="500">〜500円</option>
+          <option value="700" selected>〜700円</option>
+          <option value="1000">〜1000円</option>
+          <option value="9999">上限なし</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>食事タイミング</label>
+        <select id="timing">
+          <option value="normal" selected>通常</option>
+          <option value="pre">筋トレ前</option>
+          <option value="post">筋トレ後</option>
+        </select>
+      </div>
+      <div></div>
+    </div>
+
+    <div style="margin-top:14px">
+      <label>除外する食材（アレルギー・苦手）</label>
+      <div class="filters" id="filters">
+        <label class="chip"><input type="checkbox" value="e">卵</label>
+        <label class="chip"><input type="checkbox" value="f">魚介</label>
+        <label class="chip"><input type="checkbox" value="m">乳製品</label>
+        <label class="chip"><input type="checkbox" value="n">ナッツ</label>
+        <label class="chip"><input type="checkbox" value="s">大豆</label>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <label>対象のコンビニ</label>
+      <div class="filters" id="storeFilters">
+        <label class="chip on"><input type="checkbox" value="seven" checked>セブン‑イレブン</label>
+        <label class="chip on"><input type="checkbox" value="familymart" checked>ファミリーマート</label>
+        <label class="chip on"><input type="checkbox" value="lawson" checked>ローソン</label>
+      </div>
+    </div>
+
+    <span class="adv-toggle" id="advToggle">＋ 目標PFCを手動で設定する</span>
+    <div class="adv-box hidden" id="advBox">
+      <div class="adv-grid">
+        <div><label>kcal</label><input type="number" id="mCal" min="0"></div>
+        <div><label>P (g)</label><input type="number" id="mP" min="0"></div>
+        <div><label>F (g)</label><input type="number" id="mF" min="0"></div>
+        <div><label>C (g)</label><input type="number" id="mC" min="0"></div>
+      </div>
+    </div>
+
+    <button class="btn" id="suggestBtn">この目標でメニューを提案</button>
+  </div>
+
+  <!-- 結果カード -->
+  <div class="card hidden" id="resultCard">
+    <h2><span class="n">2</span>今日のおすすめ<span class="badge" id="goalBadge"></span></h2>
+    <div id="tip"></div>
+    <p style="font-size:11px;color:var(--sub);margin:4px 0 0">※本提案は医師の監修を受けていません。参考情報としてご利用ください。</p>
+
+    <label style="margin-bottom:2px">目標に対する達成度（1食あたり）</label>
+    <div class="ach" id="ach"></div>
+
+    <div class="sortbar"><span>並び替え</span>
+      <select id="sort">
+        <option value="std">標準</option>
+        <option value="p">タンパク質が多い順</option>
+        <option value="price">価格が安い順</option>
+        <option value="cal">カロリーが高い順</option>
+      </select>
+    </div>
+
+    <div id="warn"></div>
+    <div id="items"></div>
+
+    <div class="totals" id="totals"></div>
+
+    <div class="actions">
+      <button class="btn ghost full" id="reSuggestBtn">別の組み合わせ</button>
+      <button class="btn" id="addDayBtn">＋ 今日に追加</button>
+      <button class="btn ghost" id="copyListBtn">🛒 リストをコピー</button>
+      <button class="btn ghost full" id="saveImgBtn">🖼 画像として保存</button>
+    </div>
+
+    <div class="share">
+      <div class="share-label">保存 / シェア</div>
+      <div class="share-btns">
+        <button class="sbtn save" id="saveBtn" title="お気に入りに保存">⭐<span>保存</span></button>
+        <button class="sbtn" style="background:var(--red)" id="shareNative" title="共有">📤<span>共有</span></button>
+        <button class="sbtn x" data-sns="x" title="Xでシェア">𝕏<span>ポスト</span></button>
+        <button class="sbtn line" data-sns="line" title="LINEで送る">LINE<span>送る</span></button>
+        <button class="sbtn copy" id="shareCopy" title="リンクをコピー">🔗<span>コピー</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 今日の合計カード -->
+  <div class="card hidden" id="dayCard">
+    <div class="day-head">
+      <h2 style="margin:0"><span class="n">📅</span>今日の合計<span class="badge" id="dayCount"></span></h2>
+      <button class="day-reset" id="dayReset">クリア</button>
+    </div>
+    <div class="ach" id="dayAch"></div>
+    <div id="dayList"></div>
+  </div>
+
+  <!-- 保存・履歴カード -->
+  <div class="card hidden" id="libraryCard">
+    <div class="tabs">
+      <div class="tab on" data-tab="fav">⭐ お気に入り</div>
+      <div class="tab" data-tab="hist">🕐 履歴</div>
+    </div>
+    <div id="libList"></div>
+  </div>
+
+  <p class="note">
+    ※商品・価格・栄養値は参考値で、実際の商品とは異なる場合があります（対象：セブン‑イレブン／ファミリーマート／ローソン）。完全無料・回数制限なし。<br>
+    ※本アプリの栄養提案は医師・管理栄養士等の専門家による監修を受けていません。持病やアレルギー等がある方、健康状態に不安がある方は、ご利用前に医師にご相談ください。<br>
+    <!-- ▼ 下の mailto: の宛先を自分の受け取りたいメールに置き換えてください（GoogleフォームのURLでも可） ▼ -->
+    ご要望・不具合の報告は <a href="https://forms.gle/XDaEFTg2vcLUKUmV8" target="_blank" rel="noopener">こちら</a> までお願いします。
+  </p>
+</div>
+
+<canvas id="cardCanvas" width="1080" height="1350" class="hidden"></canvas>
+
+<script>
+/* ============ サンプル商品DB（セブン想定の参考値）
+   cat: protein/carb/veg/snack ／ tags: e=卵 f=魚介 m=乳 n=ナッツ s=大豆 ============ */
+const DB = [
+{id:"7-001", store:"seven", n:"サラダチキン(プレーン)", ic:"🍗", cat:"protein", price:238, cal:105, p:21.7, f:1.5, c:0.9, tags:[]},
+  {id:"7-002", store:"seven", n:"サラダチキン(ハーブ)", ic:"🍗", cat:"protein", price:238, cal:113, p:21.1, f:2.2, c:1.1, tags:[]},
+  {id:"7-003", store:"seven", n:"サラダチキン(タンドリー)", ic:"🍗", cat:"protein", price:238, cal:116, p:20.5, f:2.5, c:3.0, tags:[]},
+  {id:"7-004", store:"seven", n:"炭火焼き鳥 もも塩", ic:"🍢", cat:"protein", price:213, cal:150, p:14.0, f:9.5, c:1.0, tags:[]},
+  {id:"7-005", store:"seven", n:"炭火焼き鳥 むね塩", ic:"🍢", cat:"protein", price:213, cal:105, p:18.0, f:3.0, c:1.0, tags:[]},
+  {id:"7-006", store:"seven", n:"ゆで卵", ic:"🥚", cat:"protein", price:88, cal:66, p:6.5, f:4.8, c:0.2, tags:["e"]},
+  {id:"7-007", store:"seven", n:"味付き半熟ゆで卵2個", ic:"🥚", cat:"protein", price:138, cal:140, p:12.0, f:9.0, c:2.0, tags:["e"]},
+  {id:"7-008", store:"seven", n:"銀鮭の塩焼き", ic:"🐟", cat:"protein", price:298, cal:180, p:22.0, f:9.0, c:0.5, tags:["f"]},
+  {id:"7-009", store:"seven", n:"さばの塩焼き", ic:"🐟", cat:"protein", price:321, cal:230, p:20.0, f:16.0, c:0.3, tags:["f"]},
+  {id:"7-010", store:"seven", n:"ほぐしサラダチキン", ic:"🍗", cat:"protein", price:213, cal:98, p:18.0, f:2.0, c:2.0, tags:[]},
+  {id:"7-011", store:"seven", n:"タコと枝豆のアヒージョ", ic:"🐙", cat:"protein", price:321, cal:180, p:12.0, f:12.0, c:5.0, tags:["f","s"]},
+  {id:"7-012", store:"seven", n:"絹ごし豆腐", ic:"🥡", cat:"protein", price:105, cal:80, p:7.0, f:4.5, c:2.5, tags:["s"]},
+  {id:"7-013", store:"seven", n:"蒸し鶏のサラダ", ic:"🥗", cat:"protein", price:350, cal:130, p:20.0, f:4.0, c:6.0, tags:[]},
+  {id:"7-014", store:"seven", n:"焼き鮭ハラミ", ic:"🐟", cat:"protein", price:321, cal:210, p:20.0, f:14.0, c:0.5, tags:["f"]},
+  {id:"7-015", store:"seven", n:"ちくわ", ic:"🍥", cat:"protein", price:100, cal:90, p:8.0, f:1.0, c:8.0, tags:["f"]},
+  {id:"7-016", store:"seven", n:"だし巻き卵", ic:"🍳", cat:"protein", price:158, cal:130, p:9.0, f:9.0, c:3.0, tags:["e"]},
+  {id:"7-017", store:"seven", n:"豚しゃぶサラダ", ic:"🥗", cat:"protein", price:350, cal:160, p:18.0, f:8.0, c:5.0, tags:[]},
+  {id:"7-018", store:"seven", n:"サラダフィッシュ(白身)", ic:"🐟", cat:"protein", price:213, cal:90, p:18.0, f:1.5, c:1.0, tags:["f"]},
+  {id:"7-019", store:"seven", n:"冷奴(薬味付)", ic:"🥡", cat:"protein", price:128, cal:90, p:8.0, f:5.0, c:3.0, tags:["s"]},
+  {id:"7-020", store:"seven", n:"スモークチキン", ic:"🍗", cat:"protein", price:213, cal:110, p:20.0, f:2.5, c:2.0, tags:[]},
+  {id:"7-021", store:"seven", n:"厚揚げ焼き", ic:"🍢", cat:"protein", price:138, cal:150, p:11.0, f:10.0, c:3.0, tags:["s"]},
+  {id:"7-022", store:"seven", n:"塩むすび", ic:"🍙", cat:"carb", price:120, cal:180, p:3.0, f:0.5, c:40.0, tags:[]},
+  {id:"7-023", store:"seven", n:"もち麦もっちり枝豆こんぶ", ic:"🍙", cat:"carb", price:150, cal:175, p:4.5, f:1.0, c:37.0, tags:["s"]},
+  {id:"7-024", store:"seven", n:"雑穀おにぎり 鮭", ic:"🍙", cat:"carb", price:160, cal:190, p:6.0, f:2.0, c:36.0, tags:["f"]},
+  {id:"7-025", store:"seven", n:"全粒粉サンド ハム&卵", ic:"🥪", cat:"carb", price:268, cal:290, p:13.0, f:14.0, c:28.0, tags:["e","m"]},
+  {id:"7-026", store:"seven", n:"焼きおにぎり", ic:"🍙", cat:"carb", price:130, cal:185, p:3.5, f:1.0, c:40.0, tags:[]},
+  {id:"7-027", store:"seven", n:"パックごはん 150g", ic:"🍚", cat:"carb", price:150, cal:234, p:3.8, f:0.4, c:53.0, tags:[]},
+  {id:"7-028", store:"seven", n:"十六穀ごはんおにぎり", ic:"🍙", cat:"carb", price:150, cal:178, p:3.5, f:1.2, c:38.0, tags:[]},
+  {id:"7-029", store:"seven", n:"ツナマヨおにぎり", ic:"🍙", cat:"carb", price:140, cal:240, p:5.0, f:9.0, c:34.0, tags:["f","e"]},
+  {id:"7-030", store:"seven", n:"明太子おにぎり", ic:"🍙", cat:"carb", price:150, cal:175, p:5.0, f:1.0, c:37.0, tags:["f"]},
+  {id:"7-031", store:"seven", n:"全粒粉ロールパン2個", ic:"🥐", cat:"carb", price:128, cal:200, p:6.0, f:5.0, c:30.0, tags:["m"]},
+  {id:"7-032", store:"seven", n:"ざるそば", ic:"🍜", cat:"carb", price:321, cal:290, p:12.0, f:2.0, c:56.0, tags:[]},
+  {id:"7-033", store:"seven", n:"かけうどん", ic:"🍜", cat:"carb", price:321, cal:300, p:8.0, f:2.0, c:60.0, tags:[]},
+  {id:"7-034", store:"seven", n:"玄米おにぎり", ic:"🍙", cat:"carb", price:150, cal:180, p:4.0, f:1.5, c:37.0, tags:[]},
+  {id:"7-035", store:"seven", n:"赤飯おにぎり", ic:"🍙", cat:"carb", price:160, cal:200, p:4.5, f:1.0, c:42.0, tags:[]},
+  {id:"7-036", store:"seven", n:"ブロッコリー&ゆで卵サラダ", ic:"🥦", cat:"veg", price:268, cal:120, p:9.0, f:7.0, c:6.0, tags:["e"]},
+  {id:"7-037", store:"seven", n:"千切りキャベツ", ic:"🥬", cat:"veg", price:100, cal:35, p:1.5, f:0.2, c:7.0, tags:[]},
+  {id:"7-038", store:"seven", n:"ほうれん草のおひたし", ic:"🥬", cat:"veg", price:150, cal:40, p:3.0, f:1.0, c:5.0, tags:[]},
+  {id:"7-039", store:"seven", n:"海藻ミックスサラダ", ic:"🥗", cat:"veg", price:158, cal:25, p:1.5, f:0.3, c:5.0, tags:[]},
+  {id:"7-040", store:"seven", n:"6種具材のミネストローネ", ic:"🍲", cat:"veg", price:298, cal:110, p:4.0, f:3.5, c:16.0, tags:[]},
+  {id:"7-041", store:"seven", n:"枝豆", ic:"🫛", cat:"veg", price:150, cal:120, p:11.0, f:6.0, c:8.0, tags:["s"]},
+  {id:"7-042", store:"seven", n:"ごぼうサラダ", ic:"🥗", cat:"veg", price:158, cal:130, p:2.0, f:9.0, c:10.0, tags:["e"]},
+  {id:"7-043", store:"seven", n:"野菜スティック味噌", ic:"🥕", cat:"veg", price:158, cal:80, p:3.0, f:2.0, c:12.0, tags:["s"]},
+  {id:"7-044", store:"seven", n:"きんぴらごぼう", ic:"🥢", cat:"veg", price:128, cal:90, p:2.0, f:4.0, c:12.0, tags:[]},
+  {id:"7-045", store:"seven", n:"具沢山豚汁", ic:"🍲", cat:"veg", price:298, cal:130, p:8.0, f:6.0, c:12.0, tags:["s"]},
+  {id:"7-046", store:"seven", n:"わかめスープ", ic:"🍜", cat:"veg", price:128, cal:35, p:2.0, f:1.0, c:5.0, tags:["s"]},
+  {id:"7-047", store:"seven", n:"ひじきの煮物", ic:"🥢", cat:"veg", price:138, cal:90, p:3.0, f:4.0, c:10.0, tags:["s"]},
+  {id:"7-048", store:"seven", n:"蒸し野菜サラダ", ic:"🥗", cat:"veg", price:268, cal:90, p:4.0, f:3.0, c:13.0, tags:[]},
+  {id:"7-049", store:"seven", n:"プロテインドリンク(ザバス)", ic:"🥤", cat:"snack", price:170, cal:100, p:15.0, f:0.0, c:10.0, tags:["m"]},
+  {id:"7-050", store:"seven", n:"ギリシャヨーグルト 高たんぱく", ic:"🥛", cat:"snack", price:158, cal:100, p:10.0, f:0.0, c:15.0, tags:["m"]},
+  {id:"7-051", store:"seven", n:"アーモンド小魚", ic:"🐟", cat:"snack", price:180, cal:150, p:8.0, f:9.0, c:8.0, tags:["f","n"]},
+  {id:"7-052", store:"seven", n:"バナナ", ic:"🍌", cat:"snack", price:100, cal:90, p:1.2, f:0.2, c:22.0, tags:[]},
+  {id:"7-053", store:"seven", n:"素焼きミックスナッツ", ic:"🥜", cat:"snack", price:250, cal:200, p:6.0, f:17.0, c:6.0, tags:["n"]},
+  {id:"7-054", store:"seven", n:"プロテインバー チョコ", ic:"🍫", cat:"snack", price:158, cal:200, p:15.0, f:9.0, c:16.0, tags:["m","s"]},
+  {id:"7-055", store:"seven", n:"のむヨーグルト", ic:"🥛", cat:"snack", price:130, cal:120, p:5.0, f:3.0, c:18.0, tags:["m"]},
+  {id:"7-056", store:"seven", n:"高たんぱくヨーグルト無糖", ic:"🥛", cat:"snack", price:158, cal:90, p:11.0, f:0.0, c:9.0, tags:["m"]},
+  {id:"7-057", store:"seven", n:"ゆで大豆スナック", ic:"🫛", cat:"snack", price:150, cal:130, p:11.0, f:6.0, c:9.0, tags:["s"]},
+  {id:"7-058", store:"seven", n:"プロテインチップス", ic:"🥔", cat:"snack", price:200, cal:140, p:10.0, f:5.0, c:12.0, tags:["m","s"]},
+  {id:"7-059", store:"seven", n:"干しいも", ic:"🍠", cat:"snack", price:200, cal:150, p:2.0, f:0.5, c:35.0, tags:[]},
+  {id:"7-060", store:"seven", n:"大豆バー", ic:"🍫", cat:"snack", price:120, cal:130, p:4.0, f:7.0, c:12.0, tags:["s","n"]},
+  {id:"7-061", store:"seven", n:"チーズ2個", ic:"🧀", cat:"snack", price:128, cal:120, p:8.0, f:9.0, c:1.0, tags:["m"]},
+  {id:"7-062", store:"seven", n:"焼きプリン", ic:"🍮", cat:"snack", price:150, cal:160, p:4.0, f:6.0, c:22.0, tags:["e","m"]},
+  {id:"7-063", store:"seven", n:"スモークサーモンサラダ", ic:"🐟", cat:"protein", price:320, cal:140, p:16.0, f:7.0, c:3.0, tags:["f"]},
+  {id:"7-064", store:"seven", n:"鶏むね肉のグリル(黒胡椒)", ic:"🍗", cat:"protein", price:250, cal:118, p:23.0, f:2.0, c:1.0, tags:[]},
+  {id:"7-065", store:"seven", n:"五穀米おにぎり", ic:"🍙", cat:"carb", price:150, cal:182, p:3.8, f:1.0, c:39.0, tags:[]},
+  {id:"7-066", store:"seven", n:"チーズ入り焼きそばパン", ic:"🥖", cat:"carb", price:200, cal:320, p:8.0, f:12.0, c:44.0, tags:["m"]},
+  {id:"7-067", store:"seven", n:"温野菜ミックス", ic:"🥕", cat:"veg", price:200, cal:70, p:3.0, f:1.5, c:12.0, tags:[]},
+  {id:"7-068", store:"seven", n:"豆腐とわかめの味噌汁", ic:"🍜", cat:"veg", price:138, cal:60, p:4.0, f:2.0, c:6.0, tags:["s"]},
+  {id:"7-069", store:"seven", n:"高たんぱくプリン", ic:"🍮", cat:"snack", price:168, cal:130, p:10.0, f:3.0, c:15.0, tags:["e","m"]},
+  {id:"7-070", store:"seven", n:"焼き鳥スティック(おつまみ)", ic:"🍢", cat:"snack", price:158, cal:110, p:12.0, f:5.0, c:2.0, tags:[]},
+  {id:"7-071", store:"seven", n:"ミックスビーンズサラダ", ic:"🫘", cat:"snack", price:180, cal:140, p:8.0, f:4.0, c:18.0, tags:["s"]},
+  {id:"7-072", store:"seven", n:"低脂肪ヨーグルトドリンク", ic:"🥤", cat:"snack", price:140, cal:80, p:8.0, f:0.0, c:12.0, tags:["m"]},
+{id:"fm-001", store:"familymart", n:"ローストビーフスライス", ic:"🥩", cat:"protein", price:113, cal:135, p:13.5, f:8.6, c:0.8, tags:[]},
+  {id:"fm-002", store:"familymart", n:"サーモンとアボカドのサラダ", ic:"🐟", cat:"protein", price:241, cal:170, p:19.1, f:8.6, c:4.1, tags:[]},
+  {id:"fm-003", store:"familymart", n:"半熟味付け卵", ic:"🥚", cat:"protein", price:249, cal:86, p:13.0, f:1.9, c:4.3, tags:["s"]},
+  {id:"fm-004", store:"familymart", n:"鶏ささみの棒棒鶏風", ic:"🍗", cat:"protein", price:154, cal:152, p:20.9, f:6.7, c:1.9, tags:["f"]},
+  {id:"fm-005", store:"familymart", n:"からあげ(5個入り)", ic:"🍗", cat:"protein", price:194, cal:103, p:14.0, f:3.1, c:4.7, tags:[]},
+  {id:"fm-006", store:"familymart", n:"鯖の味噌煮", ic:"🐟", cat:"protein", price:178, cal:132, p:17.9, f:5.5, c:2.7, tags:["e"]},
+  {id:"fm-007", store:"familymart", n:"チキンバー(プレーン)", ic:"🍗", cat:"protein", price:131, cal:174, p:16.7, f:11.5, c:0.9, tags:[]},
+  {id:"fm-008", store:"familymart", n:"温泉卵", ic:"🥚", cat:"protein", price:110, cal:201, p:20.7, f:11.6, c:3.4, tags:["f"]},
+  {id:"fm-009", store:"familymart", n:"牛肉のたたきサラダ", ic:"🥗", cat:"protein", price:188, cal:151, p:15.6, f:7.7, c:4.8, tags:[]},
+  {id:"fm-010", store:"familymart", n:"中華まん(ピザまん)", ic:"🥟", cat:"carb", price:321, cal:203, p:7.5, f:2.2, c:38.3, tags:[]},
+  {id:"fm-011", store:"familymart", n:"ベーグル(プレーン)", ic:"🍙", cat:"carb", price:141, cal:280, p:6.7, f:6.7, c:48.3, tags:["s","e"]},
+  {id:"fm-012", store:"familymart", n:"コンビニおにぎり(梅)", ic:"🍙", cat:"carb", price:145, cal:173, p:3.9, f:3.0, c:32.7, tags:[]},
+  {id:"fm-013", store:"familymart", n:"コンビニおにぎり(高菜)", ic:"🍙", cat:"carb", price:245, cal:178, p:4.9, f:0.3, c:38.8, tags:[]},
+  {id:"fm-014", store:"familymart", n:"五目ちらし寿司", ic:"🍣", cat:"carb", price:240, cal:294, p:12.5, f:8.4, c:42.0, tags:["e"]},
+  {id:"fm-015", store:"familymart", n:"中華まん(肉まん)", ic:"🥟", cat:"carb", price:215, cal:339, p:11.6, f:11.4, c:47.5, tags:["s"]},
+  {id:"fm-016", store:"familymart", n:"肉うどん", ic:"🍜", cat:"carb", price:202, cal:190, p:3.1, f:7.7, c:27.1, tags:[]},
+  {id:"fm-017", store:"familymart", n:"ミニあんぱん", ic:"🍙", cat:"carb", price:158, cal:161, p:3.8, f:4.3, c:26.7, tags:[]},
+  {id:"fm-018", store:"familymart", n:"パスタサラダ", ic:"🍝", cat:"carb", price:145, cal:157, p:3.1, f:4.6, c:25.8, tags:["s"]},
+  {id:"fm-019", store:"familymart", n:"キャベツの浅漬け", ic:"🥬", cat:"veg", price:252, cal:78, p:3.7, f:5.1, c:4.3, tags:["s"]},
+  {id:"fm-020", store:"familymart", n:"野菜スープ", ic:"🥕", cat:"veg", price:282, cal:75, p:4.2, f:1.8, c:10.6, tags:[]},
+  {id:"fm-021", store:"familymart", n:"小松菜のおひたし", ic:"🥗", cat:"veg", price:227, cal:137, p:6.5, f:6.3, c:13.6, tags:[]},
+  {id:"fm-022", store:"familymart", n:"もずく酢", ic:"🥬", cat:"veg", price:148, cal:99, p:4.6, f:6.4, c:5.8, tags:[]},
+  {id:"fm-023", store:"familymart", n:"青菜の煮浸し", ic:"🥗", cat:"veg", price:246, cal:135, p:9.9, f:6.3, c:9.6, tags:[]},
+  {id:"fm-024", store:"familymart", n:"きのこの和え物", ic:"🍄", cat:"veg", price:221, cal:127, p:4.1, f:6.5, c:13.1, tags:[]},
+  {id:"fm-025", store:"familymart", n:"切り干し大根の煮物", ic:"🥗", cat:"veg", price:295, cal:52, p:1.7, f:0.8, c:9.6, tags:[]},
+  {id:"fm-026", store:"familymart", n:"海藻サラダ", ic:"🥗", cat:"veg", price:197, cal:96, p:9.9, f:4.9, c:3.0, tags:["s","e"]},
+  {id:"fm-027", store:"familymart", n:"アスパラのソテー", ic:"🥗", cat:"veg", price:267, cal:88, p:2.1, f:3.1, c:13.0, tags:[]},
+  {id:"fm-028", store:"familymart", n:"スティックチーズ", ic:"🧀", cat:"snack", price:228, cal:134, p:11.9, f:1.6, c:18.0, tags:[]},
+  {id:"fm-029", store:"familymart", n:"ソイジョイ風バー", ic:"🍫", cat:"snack", price:258, cal:144, p:3.9, f:14.0, c:0.7, tags:[]},
+  {id:"fm-030", store:"familymart", n:"BCAAドリンク", ic:"🥤", cat:"snack", price:180, cal:149, p:12.5, f:5.2, c:13.1, tags:["m"]},
+  {id:"fm-031", store:"familymart", n:"アーモンド(素焼き)", ic:"🥜", cat:"snack", price:246, cal:147, p:6.3, f:7.3, c:14.0, tags:["e","s"]},
+  {id:"fm-032", store:"familymart", n:"するめ焼き", ic:"🦑", cat:"snack", price:121, cal:171, p:3.3, f:8.2, c:20.9, tags:["m"]},
+  {id:"fm-033", store:"familymart", n:"甘栗", ic:"🌰", cat:"snack", price:224, cal:93, p:3.2, f:2.3, c:14.9, tags:[]},
+  {id:"fm-034", store:"familymart", n:"ドリンクヨーグルト(低糖)", ic:"🥛", cat:"snack", price:110, cal:168, p:11.2, f:8.5, c:11.6, tags:["m"]},
+  {id:"fm-035", store:"familymart", n:"ドライフルーツミックス", ic:"🍇", cat:"snack", price:140, cal:181, p:5.2, f:12.4, c:12.2, tags:["m"]},
+  {id:"fm-036", store:"familymart", n:"ホエイバー", ic:"🍫", cat:"snack", price:171, cal:163, p:10.2, f:8.1, c:12.3, tags:["e"]},
+  {id:"lw-001", store:"lawson", n:"たらのムニエル", ic:"🐟", cat:"protein", price:204, cal:225, p:17.8, f:14.9, c:5.0, tags:[]},
+  {id:"lw-002", store:"lawson", n:"温泉卵", ic:"🥚", cat:"protein", price:212, cal:126, p:18.2, f:5.4, c:1.2, tags:[]},
+  {id:"lw-003", store:"lawson", n:"サラダチキン(スモーク)", ic:"🍗", cat:"protein", price:288, cal:128, p:10.3, f:8.5, c:2.6, tags:[]},
+  {id:"lw-004", store:"lawson", n:"低脂質ハンバーグ", ic:"🍔", cat:"protein", price:186, cal:153, p:20.0, f:7.9, c:0.4, tags:["e","s"]},
+  {id:"lw-005", store:"lawson", n:"鶏むねハムスライス", ic:"🍗", cat:"protein", price:122, cal:184, p:14.4, f:13.6, c:1.1, tags:["f"]},
+  {id:"lw-006", store:"lawson", n:"焼き鳥缶詰(塩)", ic:"🍗", cat:"protein", price:321, cal:221, p:20.8, f:14.2, c:2.4, tags:[]},
+  {id:"lw-007", store:"lawson", n:"豚しゃぶと温野菜", ic:"🥕", cat:"protein", price:234, cal:125, p:17.9, f:5.2, c:1.7, tags:["e"]},
+  {id:"lw-008", store:"lawson", n:"チキンバー(プレーン)", ic:"🍗", cat:"protein", price:211, cal:187, p:11.2, f:14.1, c:3.8, tags:["e"]},
+  {id:"lw-009", store:"lawson", n:"さきいか", ic:"🦑", cat:"protein", price:258, cal:96, p:13.6, f:4.3, c:0.7, tags:[]},
+  {id:"lw-010", store:"lawson", n:"海老天うどん", ic:"🍜", cat:"carb", price:339, cal:181, p:2.4, f:0.5, c:41.7, tags:["s","e"]},
+  {id:"lw-011", store:"lawson", n:"コンビニおにぎり(昆布)", ic:"🍙", cat:"carb", price:325, cal:259, p:3.2, f:9.9, c:39.3, tags:[]},
+  {id:"lw-012", store:"lawson", n:"食パン(2枚切り)", ic:"🥐", cat:"carb", price:302, cal:272, p:6.3, f:6.2, c:47.7, tags:["m","e"]},
+  {id:"lw-013", store:"lawson", n:"コンビニおにぎり(明太子)", ic:"🍙", cat:"carb", price:301, cal:262, p:9.8, f:7.7, c:38.4, tags:[]},
+  {id:"lw-014", store:"lawson", n:"焼きうどん", ic:"🍜", cat:"carb", price:123, cal:221, p:3.4, f:1.1, c:49.4, tags:[]},
+  {id:"lw-015", store:"lawson", n:"玄米ごはんパック", ic:"🍚", cat:"carb", price:148, cal:317, p:2.9, f:10.1, c:53.7, tags:["m"]},
+  {id:"lw-016", store:"lawson", n:"ざるうどん", ic:"🍜", cat:"carb", price:248, cal:170, p:9.6, f:0.8, c:31.1, tags:[]},
+  {id:"lw-017", store:"lawson", n:"おかかごはん", ic:"🍚", cat:"carb", price:111, cal:291, p:6.0, f:4.1, c:57.5, tags:[]},
+  {id:"lw-018", store:"lawson", n:"冷やし中華", ic:"🍜", cat:"carb", price:118, cal:196, p:11.7, f:2.8, c:31.0, tags:[]},
+  {id:"lw-019", store:"lawson", n:"切り干し大根の煮物", ic:"🥗", cat:"veg", price:130, cal:90, p:7.5, f:5.1, c:3.6, tags:["s"]},
+  {id:"lw-020", store:"lawson", n:"かぶの浅漬け", ic:"🥬", cat:"veg", price:247, cal:84, p:8.3, f:1.1, c:10.3, tags:[]},
+  {id:"lw-021", store:"lawson", n:"ごぼうと人参のきんぴら", ic:"🥕", cat:"veg", price:267, cal:137, p:8.2, f:6.6, c:11.2, tags:["e"]},
+  {id:"lw-022", store:"lawson", n:"彩り温野菜", ic:"🥕", cat:"veg", price:117, cal:117, p:1.4, f:5.1, c:16.4, tags:[]},
+  {id:"lw-023", store:"lawson", n:"なめこおろし", ic:"🍄", cat:"veg", price:190, cal:49, p:1.5, f:0.2, c:10.4, tags:[]},
+  {id:"lw-024", store:"lawson", n:"おでん(大根・卵・こんにゃく)", ic:"🥚", cat:"veg", price:153, cal:90, p:5.1, f:0.6, c:16.1, tags:["e"]},
+  {id:"lw-025", store:"lawson", n:"ひじきサラダ", ic:"🥗", cat:"veg", price:232, cal:86, p:1.6, f:5.9, c:6.5, tags:[]},
+  {id:"lw-026", store:"lawson", n:"もやしのナムル", ic:"🥗", cat:"veg", price:153, cal:98, p:7.6, f:1.6, c:13.4, tags:["s","e"]},
+  {id:"lw-027", store:"lawson", n:"冷やしトマト", ic:"🥗", cat:"veg", price:115, cal:72, p:9.2, f:2.3, c:3.7, tags:["e"]},
+  {id:"lw-028", store:"lawson", n:"ソイジョイ風バー", ic:"🍫", cat:"snack", price:150, cal:106, p:2.3, f:7.6, c:7.0, tags:[]},
+  {id:"lw-029", store:"lawson", n:"高たんぱくラムネ", ic:"🍫", cat:"snack", price:181, cal:244, p:15.9, f:15.9, c:9.3, tags:["n","m"]},
+  {id:"lw-030", store:"lawson", n:"無添加ビーフジャーキー", ic:"🥩", cat:"snack", price:193, cal:180, p:3.1, f:8.4, c:22.9, tags:[]},
+  {id:"lw-031", store:"lawson", n:"ドライフルーツミックス", ic:"🍇", cat:"snack", price:231, cal:230, p:8.6, f:14.2, c:16.9, tags:[]},
+  {id:"lw-032", store:"lawson", n:"くるみ", ic:"🥜", cat:"snack", price:244, cal:37, p:8.3, f:0.4, c:0.1, tags:[]},
+  {id:"lw-033", store:"lawson", n:"アーモンド(素焼き)", ic:"🥜", cat:"snack", price:172, cal:76, p:5.5, f:2.3, c:8.3, tags:[]},
+  {id:"lw-034", store:"lawson", n:"グラノーラバー", ic:"🍫", cat:"snack", price:234, cal:192, p:1.0, f:12.0, c:20.1, tags:[]},
+  {id:"lw-035", store:"lawson", n:"スキムミルクドリンク", ic:"🥤", cat:"snack", price:248, cal:204, p:11.7, f:14.4, c:7.0, tags:[]},
+  {id:"lw-036", store:"lawson", n:"高たんぱくグミ", ic:"🍬", cat:"snack", price:163, cal:183, p:16.0, f:9.4, c:8.7, tags:[]},
+  {id:"7-073", store:"seven", n:"サラダチキン(コンソメ)", ic:"🍗", cat:"protein", price:268, cal:92, p:14.6, f:1.2, c:5.6, tags:[]},
+  {id:"7-074", store:"seven", n:"サーモンとアボカドのサラダ", ic:"🐟", cat:"protein", price:223, cal:123, p:15.5, f:4.8, c:4.4, tags:["f","s"]},
+  {id:"7-075", store:"seven", n:"いわしの梅煮", ic:"🐟", cat:"protein", price:271, cal:146, p:14.8, f:8.6, c:2.4, tags:[]},
+  {id:"7-076", store:"seven", n:"高野豆腐の煮物", ic:"🥡", cat:"protein", price:142, cal:188, p:13.3, f:13.6, c:3.0, tags:[]},
+  {id:"7-077", store:"seven", n:"低脂質ハンバーグ", ic:"🍔", cat:"protein", price:336, cal:170, p:25.9, f:7.0, c:0.8, tags:[]},
+  {id:"7-078", store:"seven", n:"温泉卵", ic:"🥚", cat:"protein", price:124, cal:84, p:15.5, f:1.8, c:1.4, tags:[]},
+  {id:"7-079", store:"seven", n:"チキンバー(プレーン)", ic:"🍗", cat:"protein", price:248, cal:209, p:24.2, f:11.4, c:2.5, tags:[]},
+  {id:"7-080", store:"seven", n:"するめ", ic:"🦑", cat:"protein", price:236, cal:114, p:16.0, f:5.4, c:0.4, tags:[]},
+  {id:"7-081", store:"seven", n:"半熟味付け卵", ic:"🥚", cat:"protein", price:352, cal:133, p:12.0, f:7.8, c:3.8, tags:["e"]},
+  {id:"7-082", store:"seven", n:"さきいか", ic:"🦑", cat:"protein", price:124, cal:168, p:24.3, f:6.1, c:3.9, tags:[]},
+  {id:"7-083", store:"seven", n:"蒸し豆腐と野菜", ic:"🥕", cat:"protein", price:181, cal:226, p:23.0, f:14.5, c:0.8, tags:[]},
+  {id:"7-084", store:"seven", n:"鶏むねハムスライス", ic:"🍗", cat:"protein", price:299, cal:234, p:22.9, f:14.5, c:2.9, tags:[]},
+  {id:"7-085", store:"seven", n:"ツナサラダ(ノンオイル)", ic:"🥗", cat:"protein", price:342, cal:185, p:24.9, f:8.2, c:2.8, tags:[]},
+  {id:"7-086", store:"seven", n:"サラダチキン(スモーク)", ic:"🍗", cat:"protein", price:304, cal:102, p:13.6, f:2.7, c:5.8, tags:[]},
+  {id:"7-087", store:"seven", n:"焼きうどん", ic:"🍜", cat:"carb", price:161, cal:178, p:8.6, f:0.4, c:35.0, tags:[]},
+  {id:"7-088", store:"seven", n:"冷やし中華", ic:"🍜", cat:"carb", price:331, cal:295, p:9.1, f:10.6, c:40.7, tags:[]},
+  {id:"7-089", store:"seven", n:"コンビニおにぎり(梅)", ic:"🍙", cat:"carb", price:167, cal:267, p:12.6, f:8.5, c:35.1, tags:[]},
+  {id:"7-090", store:"seven", n:"バターロール", ic:"🍙", cat:"carb", price:225, cal:218, p:9.4, f:5.2, c:33.5, tags:["m"]},
+  {id:"7-091", store:"seven", n:"もち麦おにぎり", ic:"🍙", cat:"carb", price:162, cal:204, p:2.4, f:4.3, c:38.9, tags:["f"]},
+  {id:"7-092", store:"seven", n:"パスタサラダ", ic:"🍝", cat:"carb", price:112, cal:221, p:5.2, f:10.2, c:27.2, tags:[]},
+  {id:"7-093", store:"seven", n:"中華まん(ピザまん)", ic:"🥟", cat:"carb", price:156, cal:226, p:10.4, f:2.6, c:40.3, tags:[]},
+  {id:"7-094", store:"seven", n:"ざるうどん", ic:"🍜", cat:"carb", price:315, cal:262, p:3.2, f:7.6, c:45.1, tags:["s"]},
+  {id:"7-095", store:"seven", n:"ベーグル(プレーン)", ic:"🍙", cat:"carb", price:206, cal:259, p:9.3, f:11.4, c:29.8, tags:[]},
+  {id:"7-096", store:"seven", n:"中華まん(肉まん)", ic:"🥟", cat:"carb", price:159, cal:176, p:12.7, f:2.0, c:26.7, tags:[]},
+  {id:"7-097", store:"seven", n:"五目ちらし寿司", ic:"🍣", cat:"carb", price:200, cal:340, p:11.9, f:10.6, c:49.2, tags:["f","s"]},
+  {id:"7-098", store:"seven", n:"サンドイッチ(ツナ)", ic:"🍙", cat:"carb", price:154, cal:256, p:9.2, f:6.4, c:40.4, tags:[]},
+  {id:"7-099", store:"seven", n:"ミニ盛りチャーハン", ic:"🍙", cat:"carb", price:277, cal:309, p:11.2, f:11.8, c:39.6, tags:[]},
+  {id:"7-100", store:"seven", n:"食パン(2枚切り)", ic:"🥐", cat:"carb", price:128, cal:275, p:2.9, f:5.2, c:54.2, tags:["f"]},
+  {id:"7-101", store:"seven", n:"白菜の漬物", ic:"🥬", cat:"veg", price:151, cal:126, p:7.7, f:7.2, c:7.7, tags:[]},
+  {id:"7-102", store:"seven", n:"かぶの浅漬け", ic:"🥬", cat:"veg", price:292, cal:97, p:6.6, f:2.1, c:13.0, tags:[]},
+  {id:"7-103", store:"seven", n:"切り干し大根", ic:"🥗", cat:"veg", price:155, cal:121, p:1.0, f:6.0, c:15.8, tags:["e"]},
+  {id:"7-104", store:"seven", n:"もやしのナムル", ic:"🥗", cat:"veg", price:105, cal:112, p:3.1, f:3.8, c:16.4, tags:["s","e"]},
+  {id:"7-105", store:"seven", n:"枝豆(塩茹で)", ic:"🫛", cat:"veg", price:283, cal:83, p:8.3, f:1.1, c:10.0, tags:[]},
+  {id:"7-106", store:"seven", n:"水菜と海苔のサラダ", ic:"🥗", cat:"veg", price:286, cal:85, p:3.7, f:5.5, c:5.1, tags:[]},
+  {id:"7-107", store:"seven", n:"青菜の煮浸し", ic:"🥗", cat:"veg", price:272, cal:122, p:5.1, f:6.3, c:11.3, tags:[]},
+  {id:"7-108", store:"seven", n:"アスパラのソテー", ic:"🥗", cat:"veg", price:178, cal:88, p:2.4, f:3.3, c:12.1, tags:[]},
+  {id:"7-109", store:"seven", n:"かぼちゃサラダ", ic:"🥗", cat:"veg", price:209, cal:58, p:2.4, f:3.4, c:4.5, tags:[]},
+  {id:"7-110", store:"seven", n:"野菜スープ", ic:"🥕", cat:"veg", price:225, cal:109, p:2.9, f:3.4, c:16.8, tags:["e","s"]},
+  {id:"7-111", store:"seven", n:"キャベツの浅漬け", ic:"🥬", cat:"veg", price:127, cal:110, p:5.1, f:7.1, c:6.3, tags:[]},
+  {id:"7-112", store:"seven", n:"海藻サラダ", ic:"🥗", cat:"veg", price:255, cal:115, p:7.8, f:6.2, c:7.1, tags:[]},
+  {id:"7-113", store:"seven", n:"トマトとチーズのサラダ", ic:"🧀", cat:"veg", price:154, cal:69, p:3.3, f:2.1, c:9.2, tags:[]},
+  {id:"7-114", store:"seven", n:"ごぼうと人参のきんぴら", ic:"🥕", cat:"veg", price:147, cal:102, p:3.5, f:7.3, c:5.6, tags:[]},
+  {id:"7-115", store:"seven", n:"カッテージチーズ", ic:"🧀", cat:"snack", price:172, cal:222, p:4.9, f:12.4, c:22.7, tags:[]},
+  {id:"7-116", store:"seven", n:"ホエイバー", ic:"🍫", cat:"snack", price:195, cal:108, p:10.3, f:3.5, c:8.8, tags:[]},
+  {id:"7-117", store:"seven", n:"高たんぱくグミ", ic:"🍬", cat:"snack", price:133, cal:168, p:4.8, f:9.6, c:15.6, tags:[]},
+  {id:"7-118", store:"seven", n:"無添加ビーフジャーキー", ic:"🥩", cat:"snack", price:102, cal:139, p:5.9, f:10.9, c:4.4, tags:[]},
+  {id:"7-119", store:"seven", n:"焼き芋スティック", ic:"🍠", cat:"snack", price:133, cal:137, p:12.9, f:8.8, c:1.5, tags:[]},
+  {id:"7-120", store:"seven", n:"アーモンド(素焼き)", ic:"🥜", cat:"snack", price:163, cal:138, p:9.3, f:10.2, c:2.2, tags:[]},
+  {id:"7-121", store:"seven", n:"ソイジョイ風バー", ic:"🍫", cat:"snack", price:211, cal:98, p:7.1, f:4.5, c:7.4, tags:["s","e"]},
+  {id:"7-122", store:"seven", n:"豆乳プリン", ic:"🍮", cat:"snack", price:191, cal:169, p:6.4, f:6.7, c:20.7, tags:["s","e"]},
+  {id:"7-123", store:"seven", n:"グラノーラバー", ic:"🍫", cat:"snack", price:132, cal:78, p:11.9, f:3.3, c:0.1, tags:["e","m"]},
+  {id:"7-124", store:"seven", n:"ゼロカロリーゼリー", ic:"🍮", cat:"snack", price:231, cal:200, p:7.1, f:14.1, c:11.1, tags:[]},
+  {id:"7-125", store:"seven", n:"煮干し", ic:"🍫", cat:"snack", price:102, cal:217, p:9.3, f:10.3, c:21.8, tags:[]},
+  {id:"7-126", store:"seven", n:"ミックスナッツ(素焼き)", ic:"🥜", cat:"snack", price:200, cal:113, p:6.6, f:8.1, c:3.5, tags:[]},
+  {id:"7-127", store:"seven", n:"カカオ高めチョコ", ic:"🍫", cat:"snack", price:183, cal:122, p:14.9, f:1.7, c:11.8, tags:["n"]},
+  {id:"7-128", store:"seven", n:"くるみ", ic:"🥜", cat:"snack", price:148, cal:148, p:13.6, f:0.7, c:21.9, tags:[]},
+];
+
+const GOALS = {
+  bulk:     {label:"増量",  kcalPerKg:14, pPerKg:0.7, fRatio:0.25},
+  maintain: {label:"維持",  kcalPerKg:11, pPerKg:0.6, fRatio:0.25},
+  cut:      {label:"減量",  kcalPerKg:8,  pPerKg:0.8, fRatio:0.20},
+};
+const TAG_LABEL = {e:"卵",f:"魚介",m:"乳",n:"ナッツ",s:"大豆"};
+const STORE_LABEL = {seven:"セブン‑イレブン",familymart:"ファミリーマート",lawson:"ローソン"};
+const TIMING_TIP = {
+  normal:"",
+  pre:"🏃 筋トレ前：脂質控えめ・消化の良い炭水化物中心。開始1〜2時間前が目安です。",
+  post:"💪 筋トレ後：吸収の速いタンパク質＋炭水化物を追加。30〜60分以内が目安です。"
+};
+
+const state = {goal:"maintain", weight:70, budget:700, excluded:[], timing:"normal",
+  stores:["seven","familymart","lawson"],
+  manual:null, plan:[], items:[], qty:[], locked:[], sort:"std"};
+const FAV_KEY="mh_fav", HIST_KEY="mh_hist", DAY_KEY="mh_day";
+
+/* ============ 計算 ============ */
+function calcTarget(goal,weight){
+  const g=GOALS[goal];
+  const cal=Math.round(g.kcalPerKg*weight);
+  const p=Math.round(g.pPerKg*weight);
+  const f=Math.round(cal*g.fRatio/9);
+  const c=Math.max(0,Math.round((cal-p*4-f*9)/4));
+  return {cal,p,f,c};
+}
+function targetPerMeal(){ return state.manual || calcTarget(state.goal,state.weight); }
+function planFor(goal,timing){
+  let plan = goal==="bulk"? ["protein","carb","carb","veg","snack"]
+    : goal==="cut"? ["protein","protein","veg","snack"]
+    : ["protein","carb","veg","snack"];
+  if(timing==="post") plan=plan.concat(["snack"]);      // 吸収の速い補食を追加
+  return plan;
+}
+function pool(cat){ return DB.filter(x=>x.cat===cat && !x.tags.some(t=>state.excluded.includes(t)) && state.stores.includes(x.store)); }
+function totals(items,qty){
+  return items.reduce((a,x,i)=>{ if(!x) return a; const q=qty?qty[i]:1;
+    return {price:a.price+x.price*q,cal:a.cal+x.cal*q,p:a.p+x.p*q,f:a.f+x.f*q,c:a.c+x.c*q}; },
+    {price:0,cal:0,p:0,f:0,c:0});
+}
+function score(items,target,budget){
+  const t=totals(items);
+  let s = Math.abs(t.cal-target.cal)/target.cal
+    + 2.0*Math.abs(t.p-target.p)/target.p
+    + 0.8*Math.abs(t.f-target.f)/Math.max(target.f,1)
+    + 0.8*Math.abs(t.c-target.c)/Math.max(target.c,1);
+  if(t.price>budget) s += (t.price-budget)/budget*3;
+  return s;
+}
+function optimize(){
+  const target=targetPerMeal();
+  let best=null,bestScore=Infinity;
+  for(let a=0;a<600;a++){
+    const items=state.plan.map((cat,i)=>{
+      if(state.locked[i] && state.items[i]) return state.items[i];
+      const pl=pool(cat);
+      return pl.length? pl[Math.floor(Math.random()*pl.length)] : null;
+    });
+    const sc=score(items,target,state.budget);
+    if(sc<bestScore){bestScore=sc;best=items;}
+  }
+  state.items=best;
+  state.qty=best.map((x,i)=>state.locked[i]&&state.qty[i]?state.qty[i]:1);
+}
+function swapSlot(i){
+  const target=targetPerMeal();
+  const pl=pool(state.plan[i]).filter(x=>x!==state.items[i]);
+  if(!pl.length) return;
+  let best=state.items[i],bs=Infinity;
+  for(const cand of pl){ const items=state.items.slice(); items[i]=cand;
+    const sc=score(items,target,state.budget); if(sc<bs){bs=sc;best=cand;} }
+  state.items[i]=best; render();
+}
+
+/* ============ 描画 ============ */
+function achRow(label,actual,target,color){
+  const pct=target>0?Math.round(actual/target*100):0;
+  const w=Math.min(100,pct);
+  const diff=Math.round(target-actual);
+  const note = diff>0?`<em>あと${diff}</em>`:(diff<0?`<em class="over">+${-diff}超過</em>`:`<em>達成</em>`);
+  return `<div class="ach-row"><span class="ach-k">${label}</span>
+    <div class="ach-track"><div class="ach-fill" style="width:${w}%;background:${color}"></div></div>
+    <span class="ach-v">${Math.round(actual)}/${target} ${note}</span></div>`;
+}
+function achBlock(t,target){
+  return achRow("カロリー",t.cal,target.cal,"var(--cal)")+achRow("タンパク",t.p,target.p,"var(--pro)")+
+    achRow("脂質",t.f,target.f,"var(--fat)")+achRow("炭水化物",t.c,target.c,"var(--carb)");
+}
+function displayOrder(){
+  const idx=state.items.map((x,i)=>i).filter(i=>state.items[i]);
+  const k=state.sort;
+  if(k==="p") idx.sort((a,b)=>state.items[b].p-state.items[a].p);
+  else if(k==="price") idx.sort((a,b)=>state.items[a].price-state.items[b].price);
+  else if(k==="cal") idx.sort((a,b)=>state.items[b].cal-state.items[a].cal);
+  return idx;
+}
+function render(){
+  const target=targetPerMeal();
+  const t=totals(state.items,state.qty);
+  document.getElementById("goalBadge").textContent=GOALS[state.goal].label;
+  document.getElementById("tip").innerHTML = TIMING_TIP[state.timing]? `<div class="tip">${TIMING_TIP[state.timing]}</div>`:"";
+  document.getElementById("ach").innerHTML=achBlock(t,target);
+
+  const missing=state.items.filter(x=>x===null).length;
+  document.getElementById("warn").innerHTML = missing?
+    `<div class="warn">除外条件により一部の枠を埋められませんでした。除外を減らすと精度が上がります。</div>`:"";
+
+  const box=document.getElementById("items"); box.innerHTML="";
+  displayOrder().forEach(i=>{
+    const x=state.items[i], q=state.qty[i]||1, locked=state.locked[i];
+    const tg = x.tags.length? " ・ "+x.tags.map(k=>TAG_LABEL[k]).join("/") : "";
+    const el=document.createElement("div"); el.className="item"+(locked?" locked":"");
+    el.innerHTML=`<div class="ic">${x.ic}</div>
+      <div class="info"><div class="nm">${x.n}<span class="store-badge">${STORE_LABEL[x.store]||""}</span></div>
+      <div class="mc">${x.cal}kcal ・ P${x.p} F${x.f} C${x.c}${tg}</div></div>
+      <div class="item-right"><div class="pr">¥${x.price*q}</div>
+      <div class="qty"><button class="qminus" data-i="${i}">−</button><span>×${q}</span><button class="qplus" data-i="${i}">＋</button></div>
+      <div class="item-btns">
+        <button class="ibtn lock${locked?" on":""}" data-i="${i}" title="${locked?"固定を解除":"この品を固定"}">${locked?"🔒":"🔓"}</button>
+        <button class="ibtn swap" data-i="${i}" title="この品だけ入れ替え">🔄</button>
+      </div></div>`;
+    box.appendChild(el);
+  });
+
+  document.getElementById("totals").innerHTML=
+    `<div><div class="v">¥${t.price}</div><div class="k">合計</div></div>
+     <div><div class="v">${Math.round(t.cal)}</div><div class="k">kcal</div></div>
+     <div><div class="v">${t.p.toFixed(0)}g</div><div class="k">P</div></div>
+     <div><div class="v">${t.f.toFixed(0)}g</div><div class="k">F</div></div>
+     <div><div class="v">${t.c.toFixed(0)}g</div><div class="k">C</div></div>`;
+  document.getElementById("resultCard").classList.remove("hidden");
+}
+
+/* ============ 入力・提案 ============ */
+function readInputs(){
+  state.goal=document.querySelector(".goal.sel").dataset.goal;
+  state.weight=+document.getElementById("weight").value||70;
+  state.budget=+document.getElementById("budget").value||700;
+  state.timing=document.getElementById("timing").value;
+  state.excluded=[...document.querySelectorAll("#filters input:checked")].map(x=>x.value);
+  state.stores=[...document.querySelectorAll("#storeFilters input:checked")].map(x=>x.value);
+  if(!state.stores.length){ state.stores=["seven","familymart","lawson"]; }
+  if(document.getElementById("advBox").classList.contains("hidden")){ state.manual=null; }
+  else{
+    state.manual={
+      cal:+document.getElementById("mCal").value||calcTarget(state.goal,state.weight).cal,
+      p:+document.getElementById("mP").value||0, f:+document.getElementById("mF").value||0, c:+document.getElementById("mC").value||0
+    };
+  }
+}
+function suggest(){
+  readInputs();
+  state.plan=planFor(state.goal,state.timing);
+  state.locked=state.plan.map(()=>false);
+  state.qty=state.plan.map(()=>1);
+  optimize(); render();
+  pushHistory();
+  document.getElementById("resultCard").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function reroll(){ optimize(); render(); }
+
+/* ============ ストレージ共通 ============ */
+function loadArr(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}}
+function saveArr(k,a){try{localStorage.setItem(k,JSON.stringify(a))}catch(e){}}
+function entriesNow(){ const e=[]; state.items.forEach((x,i)=>{ if(x) e.push({n:x.n,q:state.qty[i]||1}); }); return e; }
+function snapshot(){ return {goal:state.goal,weight:state.weight,budget:state.budget,timing:state.timing,
+  excluded:state.excluded.slice(), stores:state.stores.slice(), items:entriesNow(), ts:Date.now()}; }
+function entryTotals(entries){
+  const items=entries.map(e=>DB.find(x=>x.n===e.n)), qty=entries.map(e=>e.q);
+  return totals(items.filter(Boolean), qty);
+}
+function fmtDate(ts){const d=new Date(ts);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;}
+function todayTag(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+
+/* ============ お気に入り・履歴 ============ */
+let libTab="fav";
+function pushHistory(){ const h=loadArr(HIST_KEY); h.unshift(snapshot()); saveArr(HIST_KEY,h.slice(0,10)); renderLibrary(); }
+function saveFav(){ const f=loadArr(FAV_KEY); f.unshift(snapshot()); saveArr(FAV_KEY,f.slice(0,30)); renderLibrary();
+  const b=document.getElementById("saveBtn"),o=b.innerHTML; b.innerHTML="✅<span>保存済</span>"; setTimeout(()=>b.innerHTML=o,1400); }
+function loadSnap(snap){
+  state.goal=snap.goal; state.weight=snap.weight; state.budget=snap.budget; state.timing=snap.timing||"normal";
+  state.excluded=snap.excluded||[]; state.stores=snap.stores||["seven","familymart","lawson"]; state.manual=null;
+  state.items=snap.items.map(e=>DB.find(x=>x.n===e.n)||null);
+  state.qty=snap.items.map(e=>e.q||1);
+  state.plan=snap.items.map(e=>{const p=DB.find(x=>x.n===e.n);return p?p.cat:"snack";});
+  state.locked=snap.items.map(()=>false); state.sort="std";
+  document.querySelectorAll(".goal").forEach(g=>g.classList.toggle("sel",g.dataset.goal===state.goal));
+  document.getElementById("weight").value=state.weight;
+  document.getElementById("budget").value=state.budget;
+  document.getElementById("timing").value=state.timing;
+  document.getElementById("sort").value="std";
+  document.querySelectorAll("#filters input").forEach(c=>c.checked=state.excluded.includes(c.value));
+  document.querySelectorAll("#filters .chip").forEach(ch=>ch.classList.toggle("on",ch.querySelector("input").checked));
+  document.querySelectorAll("#storeFilters input").forEach(c=>c.checked=state.stores.includes(c.value));
+  document.querySelectorAll("#storeFilters .chip").forEach(ch=>ch.classList.toggle("on",ch.querySelector("input").checked));
+  render();
+  document.getElementById("resultCard").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function summarize(snap){ const t=entryTotals(snap.items);
+  return {label:GOALS[snap.goal].label,price:t.price,cal:Math.round(t.cal),p:t.p.toFixed(0),f:t.f.toFixed(0),c:t.c.toFixed(0),
+    names:snap.items.map(e=>e.q>1?`${e.n}×${e.q}`:e.n).join("、")}; }
+function renderLibrary(){
+  const fav=loadArr(FAV_KEY), hist=loadArr(HIST_KEY);
+  document.getElementById("libraryCard").classList.toggle("hidden", fav.length===0&&hist.length===0);
+  const arr=libTab==="fav"?fav:hist, list=document.getElementById("libList");
+  if(!arr.length){ list.innerHTML=`<div class="empty">${libTab==="fav"?"⭐ 保存した提案がここに表示されます":"まだ履歴がありません"}</div>`; return; }
+  list.innerHTML="";
+  arr.forEach((snap,idx)=>{ const s=summarize(snap); const row=document.createElement("div"); row.className="saved";
+    row.innerHTML=`<div class="sg">${s.label}</div>
+      <div class="sinfo"><div class="st">¥${s.price} ・ ${s.cal}kcal ・ P${s.p} F${s.f} C${s.c}</div>
+      <div class="sd">${s.names} <span style="opacity:.7">（${fmtDate(snap.ts)}）</span></div></div>
+      ${libTab==="fav"?`<button class="sdel" data-idx="${idx}" title="削除">×</button>`:""}`;
+    row.addEventListener("click",e=>{ if(e.target.classList.contains("sdel"))return; loadSnap(snap); });
+    list.appendChild(row); });
+  if(libTab==="fav") list.querySelectorAll(".sdel").forEach(b=>b.addEventListener("click",()=>{
+    const f=loadArr(FAV_KEY); f.splice(+b.dataset.idx,1); saveArr(FAV_KEY,f); renderLibrary(); }));
+}
+
+/* ============ 今日の合計 ============ */
+function getDay(){ let d; try{d=JSON.parse(localStorage.getItem(DAY_KEY))}catch(e){} if(!d||d.date!==todayTag()) d={date:todayTag(),meals:[]}; return d; }
+function saveDay(d){ saveArr(DAY_KEY,d); }
+function addToday(){ const d=getDay(); d.meals.push({goal:state.goal,items:entriesNow(),ts:Date.now()}); saveDay(d); renderDay();
+  const b=document.getElementById("addDayBtn"),o=b.innerHTML; b.innerHTML="✅ 追加した"; setTimeout(()=>b.innerHTML=o,1400);
+  document.getElementById("dayCard").scrollIntoView({behavior:"smooth",block:"start"}); }
+function renderDay(){
+  const d=getDay(); const card=document.getElementById("dayCard");
+  card.classList.toggle("hidden", d.meals.length===0);
+  document.getElementById("dayCount").textContent=d.meals.length+"食";
+  let all=[]; d.meals.forEach(m=>all=all.concat(m.items));
+  const t=entryTotals(all);
+  const base=calcTarget(state.goal,state.weight);
+  const dayTarget={cal:base.cal*3,p:base.p*3,f:base.f*3,c:base.c*3};
+  document.getElementById("dayAch").innerHTML=achBlock(t,dayTarget);
+  const list=document.getElementById("dayList"); list.innerHTML="";
+  d.meals.forEach((m,idx)=>{ const mt=entryTotals(m.items); const row=document.createElement("div"); row.className="saved";
+    row.innerHTML=`<div class="sg">${GOALS[m.goal].label}</div>
+      <div class="sinfo"><div class="st">¥${mt.price} ・ ${Math.round(mt.cal)}kcal ・ P${mt.p.toFixed(0)} F${mt.f.toFixed(0)} C${mt.c.toFixed(0)}</div>
+      <div class="sd">${m.items.map(e=>e.q>1?`${e.n}×${e.q}`:e.n).join("、")}</div></div>
+      <button class="sdel" data-idx="${idx}" title="削除">×</button>`;
+    list.appendChild(row); });
+  list.querySelectorAll(".sdel").forEach(b=>b.addEventListener("click",()=>{ const dd=getDay(); dd.meals.splice(+b.dataset.idx,1); saveDay(dd); renderDay(); }));
+}
+
+/* ============ 買い物リスト・画像 ============ */
+function listText(){
+  const t=totals(state.items,state.qty); const g=GOALS[state.goal].label;
+  let s=`【MACROHACK】${g}メニュー\n`;
+  state.items.forEach((x,i)=>{ if(x){ const q=state.qty[i]||1; s+=`・${x.n}${q>1?" ×"+q:""}  ¥${x.price*q}\n`; } });
+  s+=`合計 ¥${t.price} / ${Math.round(t.cal)}kcal / P${t.p.toFixed(0)} F${t.f.toFixed(0)} C${t.c.toFixed(0)}\n${shareUrl()}`;
+  return s;
+}
+async function copyList(){
+  const btn=document.getElementById("copyListBtn"),o=btn.innerHTML;
+  try{ await navigator.clipboard.writeText(listText()); btn.innerHTML="✅ コピー済"; }
+  catch(e){ prompt("コピーしてください:",listText()); }
+  setTimeout(()=>btn.innerHTML=o,1500);
+}
+function saveImage(){
+  const cv=document.getElementById("cardCanvas"), x=cv.getContext("2d");
+  const W=1080,H=1350; const g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,"#DD0000"); g.addColorStop(1,"#a30000");
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle="#fff"; x.textAlign="center"; x.font="800 88px sans-serif"; x.fillText("MACROHACK",W/2,150);
+  x.font="500 30px sans-serif"; x.fillStyle="#ffd6d6"; x.fillText("コンビニで狙ったPFCを組む",W/2,200);
+  const gl=GOALS[state.goal].label; x.fillStyle="#fff"; x.font="800 46px sans-serif"; x.fillText(`「${gl}」1食メニュー`,W/2,300);
+  // 商品
+  x.textAlign="left"; let y=390; const items=state.items.filter(Boolean);
+  items.forEach((it,k)=>{ const i=state.items.indexOf(it); const q=state.qty[i]||1;
+    x.fillStyle="#fff"; x.font="700 40px sans-serif"; x.fillText(`・${it.n}${q>1?" ×"+q:""}`,90,y);
+    x.textAlign="right"; x.fillText(`¥${it.price*q}`,W-90,y); x.textAlign="left";
+    x.fillStyle="#ffd6d6"; x.font="400 26px sans-serif"; x.fillText(`${it.cal*q}kcal  P${(it.p*q).toFixed(0)} F${(it.f*q).toFixed(0)} C${(it.c*q).toFixed(0)}`,110,y+40);
+    y+=100; });
+  // 合計ボックス
+  const t=totals(state.items,state.qty); const by=Math.max(y+30,1080);
+  x.fillStyle="rgba(255,255,255,.15)"; x.fillRect(70,by,W-140,180);
+  x.textAlign="center"; x.fillStyle="#fff";
+  const cols=[["¥"+t.price,"合計"],[Math.round(t.cal),"kcal"],[t.p.toFixed(0)+"g","P"],[t.f.toFixed(0)+"g","F"],[t.c.toFixed(0)+"g","C"]];
+  cols.forEach((cdat,k)=>{ const cx=70+(W-140)/cols.length*(k+0.5); x.font="800 52px sans-serif"; x.fillText(cdat[0],cx,by+80);
+    x.font="400 28px sans-serif"; x.fillStyle="#ffd6d6"; x.fillText(cdat[1],cx,by+130); x.fillStyle="#fff"; });
+  x.fillStyle="#ffd6d6"; x.font="400 26px sans-serif"; x.fillText(shareUrl().replace(/^https?:\/\//,""),W/2,H-50);
+  cv.toBlob(b=>{ const url=URL.createObjectURL(b); const a=document.createElement("a"); a.href=url; a.download="macrohack.png"; a.click(); setTimeout(()=>URL.revokeObjectURL(url),3000); });
+}
+
+/* ============ シェア ============ */
+const SITE_NAME="MACROHACK（マクロハック）";
+function shareUrl(){return location.href.split("#")[0];}
+function shareText(){ const t=totals(state.items,state.qty); const g=GOALS[state.goal].label;
+  return `${SITE_NAME}で「${g}」メニューを提案してもらった💪 合計¥${t.price} / ${Math.round(t.cal)}kcal / P${t.p.toFixed(0)} F${t.f.toFixed(0)} C${t.c.toFixed(0)} #MACROHACK #筋トレ飯`; }
+function openShare(sns){ const u=encodeURIComponent(shareUrl()),txt=encodeURIComponent(shareText()); let link="";
+  if(sns==="x") link=`https://twitter.com/intent/tweet?text=${txt}&url=${u}`;
+  if(sns==="line") link=`https://social-plugins.line.me/lineit/share?url=${u}&text=${txt}`;
+  window.open(link,"_blank","noopener,width=600,height=560"); }
+
+/* ============ イベント ============ */
+document.getElementById("goals").addEventListener("click",e=>{ const g=e.target.closest(".goal"); if(!g)return;
+  document.querySelectorAll(".goal").forEach(x=>x.classList.remove("sel")); g.classList.add("sel"); });
+document.getElementById("filters").addEventListener("change",e=>{ const chip=e.target.closest(".chip"); if(chip) chip.classList.toggle("on",e.target.checked); });
+document.getElementById("storeFilters").addEventListener("change",e=>{ const chip=e.target.closest(".chip"); if(chip) chip.classList.toggle("on",e.target.checked); });
+document.getElementById("advToggle").addEventListener("click",()=>{
+  const box=document.getElementById("advBox"), tgl=document.getElementById("advToggle");
+  const willShow=box.classList.contains("hidden");
+  box.classList.toggle("hidden");
+  tgl.textContent = willShow? "− 目標PFCを自動に戻す" : "＋ 目標PFCを手動で設定する";
+  if(willShow){ const w=+document.getElementById("weight").value||70; const g=document.querySelector(".goal.sel").dataset.goal;
+    const tg=calcTarget(g,w); mCal.value=tg.cal; mP.value=tg.p; mF.value=tg.f; mC.value=tg.c; }
+});
+document.getElementById("suggestBtn").addEventListener("click",suggest);
+document.getElementById("reSuggestBtn").addEventListener("click",reroll);
+document.getElementById("sort").addEventListener("change",e=>{ state.sort=e.target.value; render(); });
+document.getElementById("items").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return; const i=+b.dataset.i;
+  if(b.classList.contains("lock")){ state.locked[i]=!state.locked[i]; render(); }
+  else if(b.classList.contains("swap")){ swapSlot(i); }
+  else if(b.classList.contains("qplus")){ state.qty[i]=Math.min(5,(state.qty[i]||1)+1); render(); }
+  else if(b.classList.contains("qminus")){ state.qty[i]=Math.max(1,(state.qty[i]||1)-1); render(); }
+});
+document.getElementById("addDayBtn").addEventListener("click",addToday);
+document.getElementById("copyListBtn").addEventListener("click",copyList);
+document.getElementById("saveImgBtn").addEventListener("click",saveImage);
+document.getElementById("dayReset").addEventListener("click",()=>{ saveDay({date:todayTag(),meals:[]}); renderDay(); });
+document.getElementById("saveBtn").addEventListener("click",saveFav);
+document.querySelectorAll(".sbtn[data-sns]").forEach(b=>b.addEventListener("click",()=>openShare(b.dataset.sns)));
+const nativeBtn=document.getElementById("shareNative");
+if(navigator.share){ nativeBtn.addEventListener("click",async()=>{try{await navigator.share({title:SITE_NAME,text:shareText(),url:shareUrl()});}catch(e){}}); }
+else nativeBtn.style.display="none";
+document.getElementById("shareCopy").addEventListener("click",async()=>{ const btn=document.getElementById("shareCopy");
+  try{ await navigator.clipboard.writeText(shareUrl()); const o=btn.innerHTML; btn.innerHTML="✅<span>コピー済</span>"; setTimeout(()=>btn.innerHTML=o,1500); }
+  catch(e){ prompt("このリンクをコピーしてください:",shareUrl()); } });
+document.querySelector(".tabs").addEventListener("click",e=>{ const tab=e.target.closest(".tab"); if(!tab)return;
+  libTab=tab.dataset.tab; document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t===tab)); renderLibrary(); });
+
+renderLibrary(); renderDay();
+
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{})); }
+</script>
+
+<!-- ホーム画面追加導線（A2HS）。詳細: 2026-08-04_home-screen-add-implementation.js -->
+<script src="a2hs.js"></script>
+
+<!-- ▼▼ Cloudflare Web Analytics（Shiryuさん本人のテストアクセスは除外） ▼▼ -->
+<!-- トークン設定済み。/api/is-admin（_worker.js）でisAdmin判定し、管理者IPの場合はビーコンを読み込まない。
+     /api/is-adminが未反映・エラー時はfail-open（通常どおり計測する）。 -->
+<script>
+(function(){
+  function loadBeacon(){
+    var s=document.createElement("script");
+    s.defer=true;
+    s.src="https://static.cloudflareinsights.com/beacon.min.js";
+    s.setAttribute("data-cf-beacon", JSON.stringify({token:"507eb27bdd2f48589a700f8ccfde36b4"}));
+    document.head.appendChild(s);
+  }
+  fetch("/api/is-admin", {cache:"no-store"}).then(function(r){
+    if(!r.ok) throw new Error("is-admin not ok");
+    return r.json();
+  }).then(function(data){
+    if(!data.isAdmin) loadBeacon();
+  }).catch(function(){
+    loadBeacon();
+  });
+})();
+</script>
+<!-- ▲▲ Cloudflare Web Analytics ▲▲ -->
+</body>
+</html>
