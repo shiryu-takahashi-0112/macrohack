@@ -156,9 +156,64 @@
   .empty{font-size:12.5px;color:var(--sub);text-align:center;padding:14px 0}
   .day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
   .day-reset{font-size:11.5px;color:var(--sub);background:none;border:none;text-decoration:underline;cursor:pointer}
+  /* ▼▼ 会員登録・ログインゲート ▼▼ */
+  .auth-gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;
+    align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto}
+  .auth-box{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:26px 22px;
+    width:100%;max-width:360px}
+  .auth-logo{font-size:20px;font-weight:800;color:var(--red);text-align:center;letter-spacing:.04em}
+  .auth-tag{font-size:12.5px;color:var(--sub);text-align:center;margin-top:6px;margin-bottom:18px}
+  .auth-tabs{display:flex;gap:8px;margin-bottom:16px}
+  .auth-tab{flex:1;text-align:center;padding:9px;border:1.5px solid var(--line);border-radius:10px;font-size:13px;
+    font-weight:700;color:var(--sub);cursor:pointer;background:#fff}
+  .auth-tab.on{border-color:var(--red);background:var(--red-tint);color:var(--red)}
+  .auth-box label{margin-top:12px}
+  .auth-box input[type=email],.auth-box input[type=password]{width:100%;padding:10px 12px;
+    border:1.5px solid var(--line);border-radius:10px;font-size:15px;background:#fff;color:var(--ink)}
+  .auth-box input[type=email]:focus,.auth-box input[type=password]:focus{outline:none;border-color:var(--red)}
+  .auth-box .btn{margin-top:16px}
+  .auth-error{font-size:12px;color:var(--red);background:var(--red-tint);border-radius:8px;padding:8px 10px;margin-top:12px}
+  .auth-divider{display:flex;align-items:center;gap:10px;margin:18px 0;font-size:11.5px;color:var(--sub)}
+  .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  .auth-google{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0}
+  .auth-switch{font-size:12.5px;color:var(--sub);text-align:center;margin-top:16px}
+  .auth-switch a{color:var(--red);font-weight:700;text-decoration:none;margin-left:4px}
+  .logout-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.18);color:#fff;
+    border:1px solid rgba(255,255,255,.5);border-radius:20px;font-size:11px;padding:5px 12px;cursor:pointer}
+  header{position:relative}
+  html.auth-locked,body.auth-locked{overflow:hidden}
+  /* ▲▲ 会員登録・ログインゲート ▲▲ */
 </style>
 </head>
-<body>
+<body class="auth-locked">
+<!-- ▼▼ 会員登録・ログインゲート（Firebase Authentication） ▼▼ -->
+<div id="authGate" class="auth-gate">
+  <div class="auth-box">
+    <div class="auth-logo">MACROHACK</div>
+    <p class="auth-tag">ご利用には会員登録（無料）が必要です</p>
+
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab on" id="authTabLogin">ログイン</button>
+      <button type="button" class="auth-tab" id="authTabSignup">新規登録</button>
+    </div>
+
+    <form id="authForm">
+      <label for="authEmail">メールアドレス</label>
+      <input type="email" id="authEmail" required autocomplete="email" placeholder="you@example.com">
+      <label for="authPassword">パスワード</label>
+      <input type="password" id="authPassword" required autocomplete="current-password" minlength="6" placeholder="6文字以上">
+      <div id="authError" class="auth-error hidden"></div>
+      <button type="submit" class="btn" id="authSubmitBtn">ログイン</button>
+    </form>
+
+    <div class="auth-divider"><span>または</span></div>
+
+    <button type="button" class="btn ghost full auth-google" id="authGoogleBtn">Googleでログイン</button>
+
+    <p class="auth-switch"><span id="authSwitchText">アカウントをお持ちでない方は</span><a href="#" id="authSwitchLink">新規登録</a></p>
+  </div>
+</div>
+<!-- ▲▲ 会員登録・ログインゲート ▲▲ -->
 <header>
   <div class="logo-wrap">
     <svg viewBox="0 0 800 116" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MACROHACK">
@@ -175,6 +230,7 @@
   </div>
   <div class="read">マクロハック</div>
   <p class="tagline">コンビニの商品で、狙ったPFCバランスを組む</p>
+  <button type="button" class="logout-btn" id="logoutBtn">ログアウト</button>
 </header>
 
 <div class="wrap">
@@ -887,5 +943,113 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.s
 })();
 </script>
 <!-- ▲▲ Cloudflare Web Analytics ▲▲ -->
+
+<!-- ▼▼ 会員登録・ログイン処理（Firebase Authentication） ▼▼ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, signOut
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBnc3Xf7nGOpXi62jOv94KJddgnWE0H0SQ",
+  authDomain: "macrohack-66aa2.firebaseapp.com",
+  projectId: "macrohack-66aa2",
+  storageBucket: "macrohack-66aa2.firebasestorage.app",
+  messagingSenderId: "970602826950",
+  appId: "1:970602826950:web:84d7096dcdf723812b1bc7"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+
+const gate = document.getElementById("authGate");
+const authForm = document.getElementById("authForm");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authError = document.getElementById("authError");
+const authSubmitBtn = document.getElementById("authSubmitBtn");
+const authTabLogin = document.getElementById("authTabLogin");
+const authTabSignup = document.getElementById("authTabSignup");
+const authGoogleBtn = document.getElementById("authGoogleBtn");
+const authSwitchLink = document.getElementById("authSwitchLink");
+const authSwitchText = document.getElementById("authSwitchText");
+const logoutBtn = document.getElementById("logoutBtn");
+
+let authMode = "login";
+
+function setAuthMode(m){
+  authMode = m;
+  authTabLogin.classList.toggle("on", m === "login");
+  authTabSignup.classList.toggle("on", m === "signup");
+  authSubmitBtn.textContent = m === "login" ? "ログイン" : "新規登録";
+  authPassword.autocomplete = m === "login" ? "current-password" : "new-password";
+  authSwitchText.textContent = m === "login" ? "アカウントをお持ちでない方は" : "すでにアカウントをお持ちの方は";
+  authSwitchLink.textContent = m === "login" ? "新規登録" : "ログイン";
+  authError.classList.add("hidden");
+}
+
+authTabLogin.addEventListener("click", ()=> setAuthMode("login"));
+authTabSignup.addEventListener("click", ()=> setAuthMode("signup"));
+authSwitchLink.addEventListener("click", (e)=>{ e.preventDefault(); setAuthMode(authMode === "login" ? "signup" : "login"); });
+
+function showAuthError(err){
+  const messages = {
+    "auth/invalid-email": "メールアドレスの形式が正しくありません。",
+    "auth/user-not-found": "アカウントが見つかりません。新規登録をお試しください。",
+    "auth/wrong-password": "パスワードが正しくありません。",
+    "auth/invalid-credential": "メールアドレスまたはパスワードが正しくありません。",
+    "auth/email-already-in-use": "このメールアドレスは既に登録されています。ログインをお試しください。",
+    "auth/weak-password": "パスワードは6文字以上で設定してください。",
+    "auth/too-many-requests": "試行回数が多すぎます。しばらく待ってから再度お試しください。",
+    "auth/network-request-failed": "通信エラーが発生しました。通信状況をご確認ください。"
+  };
+  authError.textContent = messages[err && err.code] || "エラーが発生しました。しばらくしてから再度お試しください。";
+  authError.classList.remove("hidden");
+}
+
+authForm.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  authError.classList.add("hidden");
+  authSubmitBtn.disabled = true;
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+  try{
+    if(authMode === "login"){
+      await signInWithEmailAndPassword(auth, email, password);
+    } else {
+      await createUserWithEmailAndPassword(auth, email, password);
+    }
+  } catch(err){
+    showAuthError(err);
+  } finally {
+    authSubmitBtn.disabled = false;
+  }
+});
+
+authGoogleBtn.addEventListener("click", async ()=>{
+  authError.classList.add("hidden");
+  try{
+    await signInWithPopup(auth, new GoogleAuthProvider());
+  } catch(err){
+    if(err && err.code !== "auth/popup-closed-by-user") showAuthError(err);
+  }
+});
+
+logoutBtn.addEventListener("click", ()=> signOut(auth));
+
+onAuthStateChanged(auth, (user)=>{
+  if(user){
+    gate.classList.add("hidden");
+    document.body.classList.remove("auth-locked");
+  } else {
+    gate.classList.remove("hidden");
+    document.body.classList.add("auth-locked");
+    authForm.reset();
+  }
+});
+</script>
+<!-- ▲▲ 会員登録・ログイン処理 ▲▲ -->
 </body>
 </html>
