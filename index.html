@@ -1100,15 +1100,32 @@ logoutBtn.addEventListener("click", ()=> signOut(auth));
 
 let currentUser = null;
 let pendingAction = null;
+let gateHistoryPushed = false;
 
+// 会員登録ゲートを開くとブラウザ履歴に1件追加し、ブラウザバックでゲートを
+// 閉じて元の画面に戻れるようにする。
 function openGate(){
   gate.classList.remove("hidden");
   document.body.classList.add("auth-locked");
+  if(!gateHistoryPushed){
+    history.pushState({ authGate: true }, "", location.href);
+    gateHistoryPushed = true;
+  }
 }
-function closeGate(){
+function closeGate(fromPopstate){
   gate.classList.add("hidden");
   document.body.classList.remove("auth-locked");
+  if(gateHistoryPushed){
+    gateHistoryPushed = false;
+    if(!fromPopstate) history.back();
+  }
 }
+
+window.addEventListener("popstate", ()=>{
+  if(!gate.classList.contains("hidden")){
+    closeGate(true);
+  }
+});
 
 // 「この目標でメニューを提案」を押したタイミングで会員登録・ログインを求める
 document.addEventListener("click", (e)=>{
