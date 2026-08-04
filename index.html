@@ -161,7 +161,8 @@
     align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto}
   .auth-box{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:26px 22px;
     width:100%;max-width:360px}
-  .auth-logo{font-size:20px;font-weight:800;color:var(--red);text-align:center;letter-spacing:.04em}
+  .auth-logo{max-width:190px;margin:0 auto}
+  .auth-logo svg{width:100%;height:auto;display:block}
   .auth-tag{font-size:12.5px;color:var(--sub);text-align:center;margin-top:6px;margin-bottom:18px}
   .auth-tabs{display:flex;gap:8px;margin-bottom:16px}
   .auth-tab{flex:1;text-align:center;padding:9px;border:1.5px solid var(--line);border-radius:10px;font-size:13px;
@@ -185,11 +186,23 @@
   /* ▲▲ 会員登録・ログインゲート ▲▲ */
 </style>
 </head>
-<body class="auth-locked">
+<body>
 <!-- ▼▼ 会員登録・ログインゲート（Firebase Authentication） ▼▼ -->
-<div id="authGate" class="auth-gate">
+<div id="authGate" class="auth-gate hidden">
   <div class="auth-box">
-    <div class="auth-logo">MACROHACK</div>
+    <div class="auth-logo">
+      <svg viewBox="0 0 800 116" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MACROHACK">
+        <path d="M89.16 2.32999V113.45H63.9L63.87 38.43L53.81 113.45H35.9L25.3 40.15L25.27 113.45H0V2.32999H37.39C38.5 9.00999 39.64 16.89 40.82 25.95L44.92 54.21L51.56 2.32999H89.15H89.16Z" fill="#DD0000"/>
+        <path d="M165.09 2.32999L181.61 113.45H152.08L150.53 93.48H140.19L138.45 113.45H108.58L123.32 2.32999H165.08H165.09ZM149.77 73.78C148.31 61.19 146.84 45.64 145.37 27.11C142.43 48.39 140.58 63.95 139.82 73.78H149.77Z" fill="#DD0000"/>
+        <path d="M266.74 50.72H237.84V31.41C237.84 25.79 237.53 22.29 236.91 20.9C236.29 19.51 234.93 18.81 232.83 18.81C230.45 18.81 228.94 19.66 228.3 21.35C227.66 23.04 227.34 26.7 227.34 32.33V83.94C227.34 89.34 227.66 92.86 228.3 94.51C228.94 96.16 230.38 96.98 232.62 96.98C234.86 96.98 236.18 96.16 236.84 94.5C237.5 92.85 237.84 88.97 237.84 82.87V68.9H266.74V73.23C266.74 84.73 265.93 92.89 264.3 97.7C262.68 102.51 259.08 106.73 253.52 110.35C247.96 113.97 241.11 115.78 232.96 115.78C224.81 115.78 217.52 114.25 212.03 111.18C206.54 108.12 202.9 103.87 201.12 98.45C199.34 93.03 198.44 84.87 198.44 73.98V41.52C198.44 33.51 198.71 27.51 199.26 23.5C199.81 19.49 201.44 15.64 204.17 11.93C206.89 8.22999 210.67 5.30999 215.49 3.17999C220.32 1.04999 225.86 -0.0100098 232.13 -0.0100098C240.64 -0.0100098 247.66 1.63999 253.2 4.92999C258.74 8.21999 262.37 12.32 264.11 17.23C265.85 22.14 266.72 29.78 266.72 40.16V50.72H266.74Z" fill="#DD0000"/>
+        <path d="M288.46 2.32999H308.91C322.54 2.32999 331.78 2.85999 336.6 3.90999C341.43 4.95999 345.36 7.64999 348.4 11.97C351.44 16.29 352.96 23.19 352.96 32.66C352.96 41.31 351.88 47.12 349.73 50.09C347.58 53.06 343.35 54.85 337.03 55.44C342.75 56.86 346.59 58.76 348.56 61.14C350.53 63.52 351.75 65.7 352.23 67.69C352.71 69.68 352.95 75.16 352.95 84.13V113.44H326.11V76.51C326.11 70.56 325.64 66.88 324.7 65.46C323.76 64.04 321.3 63.33 317.32 63.33V113.43H288.42V2.32999H288.46ZM317.35 21.35V46.06C320.6 46.06 322.88 45.61 324.18 44.72C325.48 43.83 326.14 40.94 326.14 36.04V29.93C326.14 26.41 325.51 24.1 324.25 23C322.99 21.9 320.69 21.35 317.35 21.35Z" fill="#DD0000"/>
+        <path d="M441.56 67.4C441.56 78.56 441.3 86.47 440.77 91.11C440.24 95.75 438.6 100 435.83 103.84C433.06 107.68 429.32 110.63 424.61 112.69C419.9 114.75 414.41 115.78 408.14 115.78C401.87 115.78 396.85 114.81 392.11 112.86C387.37 110.91 383.57 108 380.68 104.11C377.8 100.22 376.08 95.99 375.53 91.41C374.98 86.83 374.71 78.83 374.71 67.39V48.38C374.71 37.22 374.97 29.31 375.5 24.67C376.03 20.03 377.67 15.78 380.44 11.94C383.21 8.1 386.95 5.15 391.66 3.09C396.37 1.03 401.86 0 408.13 0C414.08 0 419.42 0.97 424.16 2.92C428.9 4.87 432.7 7.78 435.59 11.67C438.47 15.56 440.19 19.79 440.74 24.37C441.29 28.95 441.56 36.95 441.56 48.39V67.4ZM412.66 30.89C412.66 25.72 412.37 22.41 411.8 20.97C411.23 19.53 410.05 18.81 408.27 18.81C406.76 18.81 405.6 19.39 404.8 20.56C404 21.73 403.6 25.17 403.6 30.89V82.78C403.6 89.23 403.86 93.21 404.39 94.72C404.92 96.23 406.14 96.98 408.06 96.98C409.98 96.98 411.29 96.11 411.84 94.37C412.39 92.63 412.66 88.49 412.66 81.95V30.89Z" fill="#DD0000"/>
+        <path d="M530.29 2.32999V113.45H501.39V66.78H492.74V113.45H463.84V2.32999H492.74V42.07H501.39V2.32999H530.29Z" fill="#DD0000"/>
+        <path d="M606.17 2.32999L622.69 113.45H593.16L591.61 93.48H581.27L579.53 113.45H549.66L564.4 2.32999H606.16H606.17ZM590.86 73.78C589.4 61.19 587.93 45.64 586.46 27.11C583.52 48.39 581.67 63.95 580.91 73.78H590.86Z" fill="#DD0000"/>
+        <path d="M707.82 50.72H678.93V31.41C678.93 25.79 678.62 22.29 678 20.9C677.38 19.51 676.02 18.81 673.92 18.81C671.54 18.81 670.03 19.66 669.39 21.35C668.75 23.04 668.43 26.7 668.43 32.33V83.94C668.43 89.34 668.75 92.86 669.39 94.51C670.03 96.16 671.47 96.98 673.71 96.98C675.95 96.98 677.27 96.16 677.93 94.5C678.59 92.85 678.93 88.97 678.93 82.87V68.9H707.82V73.23C707.82 84.73 707.01 92.89 705.38 97.7C703.75 102.51 700.16 106.73 694.6 110.35C689.04 113.97 682.19 115.78 674.04 115.78C665.89 115.78 658.6 114.25 653.11 111.18C647.62 108.12 643.98 103.87 642.2 98.45C640.42 93.03 639.52 84.87 639.52 73.98V41.52C639.52 33.51 639.79 27.51 640.34 23.5C640.89 19.49 642.52 15.64 645.25 11.93C647.97 8.22999 651.75 5.30999 656.58 3.17999C661.41 1.04999 666.95 -0.0100098 673.22 -0.0100098C681.73 -0.0100098 688.75 1.63999 694.29 4.92999C699.83 8.21999 703.46 12.32 705.2 17.23C706.94 22.14 707.81 29.78 707.81 40.16V50.72H707.82Z" fill="#DD0000"/>
+        <path d="M798.42 2.32999L781.84 52.5L799.99 113.45H770.13L758.43 65.82V113.45H729.53V2.32999H758.43V45.5L771.3 2.32999H798.41H798.42Z" fill="#DD0000"/>
+      </svg>
+    </div>
     <p class="auth-tag">ご利用には会員登録（無料）が必要です</p>
 
     <div class="auth-tabs">
@@ -743,9 +756,20 @@ function suggest(){
 }
 function reroll(){ optimize(); render(); }
 
-/* ============ ストレージ共通 ============ */
-function loadArr(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}}
-function saveArr(k,a){try{localStorage.setItem(k,JSON.stringify(a))}catch(e){}}
+/* ============ ストレージ共通（ログイン中のアカウントにFirestoreで紐付け） ============ */
+function loadArr(k){
+  const c=window.__mhCloud;
+  if(!c) return [];
+  if(k===FAV_KEY) return c.fav||[];
+  if(k===HIST_KEY) return c.hist||[];
+  return [];
+}
+function saveArr(k,a){
+  const c=window.__mhCloud;
+  if(!c) return;
+  if(k===FAV_KEY){ c.fav=a; if(window.__mhCloudSave) window.__mhCloudSave({fav:a}); }
+  else if(k===HIST_KEY){ c.hist=a; if(window.__mhCloudSave) window.__mhCloudSave({hist:a}); }
+}
 function entriesNow(){ const e=[]; state.items.forEach((x,i)=>{ if(x) e.push({n:x.n,q:state.qty[i]||1}); }); return e; }
 function snapshot(){ return {goal:state.goal,weight:state.weight,budget:state.budget,timing:state.timing,
   excluded:state.excluded.slice(), stores:state.stores.slice(), items:entriesNow(), ts:Date.now()}; }
@@ -801,8 +825,8 @@ function renderLibrary(){
 }
 
 /* ============ 今日の合計 ============ */
-function getDay(){ let d; try{d=JSON.parse(localStorage.getItem(DAY_KEY))}catch(e){} if(!d||d.date!==todayTag()) d={date:todayTag(),meals:[]}; return d; }
-function saveDay(d){ saveArr(DAY_KEY,d); }
+function getDay(){ const c=window.__mhCloud; let d=c?c.day:null; if(!d||d.date!==todayTag()) d={date:todayTag(),meals:[]}; return d; }
+function saveDay(d){ const c=window.__mhCloud; if(!c) return; c.day=d; if(window.__mhCloudSave) window.__mhCloudSave({day:d}); }
 function addToday(){ const d=getDay(); d.meals.push({goal:state.goal,items:entriesNow(),ts:Date.now()}); saveDay(d); renderDay();
   const b=document.getElementById("addDayBtn"),o=b.innerHTML; b.innerHTML="✅ 追加した"; setTimeout(()=>b.innerHTML=o,1400);
   document.getElementById("dayCard").scrollIntoView({behavior:"smooth",block:"start"}); }
@@ -951,6 +975,9 @@ import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   GoogleAuthProvider, signInWithPopup, signOut
 } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBnc3Xf7nGOpXi62jOv94KJddgnWE0H0SQ",
@@ -963,6 +990,37 @@ const firebaseConfig = {
 
 const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+/* ============ お気に入り・履歴・今日の合計をアカウントに紐付けて保存する ============
+   window.__mhCloud はクラシックスクリプト（app本体）側から読む簡易キャッシュ。
+   ログイン中はFirestoreの users/{uid} ドキュメントとリアルタイムに同期する。 */
+window.__mhCloud = { fav: [], hist: [], day: null, ready: false };
+window.__mhCloudSave = function(){};
+let unsubscribeCloud = null;
+
+function resetCloud(){
+  window.__mhCloud = { fav: [], hist: [], day: null, ready: false };
+  window.__mhCloudSave = function(){};
+  if(typeof window.renderLibrary === "function") window.renderLibrary();
+  if(typeof window.renderDay === "function") window.renderDay();
+}
+
+function connectCloud(uid){
+  const ref = doc(db, "users", uid);
+  unsubscribeCloud = onSnapshot(ref, (snap)=>{
+    const d = snap.exists() ? snap.data() : {};
+    window.__mhCloud.fav = d.fav || [];
+    window.__mhCloud.hist = d.hist || [];
+    window.__mhCloud.day = d.day || null;
+    window.__mhCloud.ready = true;
+    if(typeof window.renderLibrary === "function") window.renderLibrary();
+    if(typeof window.renderDay === "function") window.renderDay();
+  });
+  window.__mhCloudSave = function(patch){
+    setDoc(ref, patch, { merge: true }).catch(()=>{});
+  };
+}
 
 const gate = document.getElementById("authGate");
 const authForm = document.getElementById("authForm");
@@ -1039,13 +1097,44 @@ authGoogleBtn.addEventListener("click", async ()=>{
 
 logoutBtn.addEventListener("click", ()=> signOut(auth));
 
+let currentUser = null;
+let pendingAction = null;
+
+function openGate(){
+  gate.classList.remove("hidden");
+  document.body.classList.add("auth-locked");
+}
+function closeGate(){
+  gate.classList.add("hidden");
+  document.body.classList.remove("auth-locked");
+}
+
+// 「この目標でメニューを提案」を押したタイミングで会員登録・ログインを求める
+document.addEventListener("click", (e)=>{
+  if(currentUser) return;
+  const trigger = e.target.closest("#suggestBtn");
+  if(!trigger) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  pendingAction = trigger.id;
+  setAuthMode("signup");
+  openGate();
+}, true);
+
 onAuthStateChanged(auth, (user)=>{
+  currentUser = user;
+  if(unsubscribeCloud){ unsubscribeCloud(); unsubscribeCloud = null; }
   if(user){
-    gate.classList.add("hidden");
-    document.body.classList.remove("auth-locked");
+    connectCloud(user.uid);
+    closeGate();
+    if(pendingAction){
+      const elId = pendingAction;
+      pendingAction = null;
+      const el = document.getElementById(elId);
+      if(el) setTimeout(()=> el.click(), 0);
+    }
   } else {
-    gate.classList.remove("hidden");
-    document.body.classList.add("auth-locked");
+    resetCloud();
     authForm.reset();
   }
 });
