@@ -31,6 +31,64 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // 内部用: Claude(自動化エージェント)からSlackへ「MACROHACK Bot」名義で
+    // 業務報告を送信するためのリレー。エージェント実行環境からSlack APIへ
+    // 直接到達できないため、このWorker経由でサーバーサイドから中継する。
+    // 認証は共有シークレット（X-Relay-Secret ヘッダー）で行い、第三者による
+    // 悪用を防ぐ。
+    if (url.pathname === "/api/slack-notify") {
+      if (request.method !== "POST") {
+        return new Response("Method Not Allowed", { status: 405 });
+      }
+
+      const providedSecret = request.headers.get("X-Relay-Secret") || "";
+      if (!env.RELAY_SECRET || providedSecret !== env.RELAY_SECRET) {
+        return new Response(JSON.stringify({ ok: false, error: "unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+        });
+      }
+
+      let payload;
+      try {
+        payload = await request.json();
+      } catch (e) {
+        return new Response(JSON.stringify({ ok: false, error: "invalid_json" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+        });
+      }
+
+      if (!payload.channel || !payload.text) {
+        return new Response(JSON.stringify({ ok: false, error: "missing_channel_or_text" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+        });
+      }
+
+      const slackRes = await fetch("https://slack.com/api/chat.postMessage", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${env.SLACK_BOT_TOKEN}`,
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          channel: payload.channel,
+          text: payload.text,
+          thread_ts: payload.thread_ts,
+        }),
+      });
+      const slackJson = await slackRes.json();
+
+      return new Response(JSON.stringify(slackJson), {
+        status: slackRes.ok ? 200 : 502,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+
     if (url.pathname === "/api/is-admin") {
       if (request.method !== "GET" && request.method !== "HEAD") {
         return new Response("Method Not Allowed", { status: 405 });
