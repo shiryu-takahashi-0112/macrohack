@@ -180,8 +180,6 @@
   .auth-google{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0}
   .auth-switch{font-size:12.5px;color:var(--sub);text-align:center;margin-top:16px}
   .auth-switch a{color:var(--red);font-weight:700;text-decoration:none;margin-left:4px}
-  .logout-btn{display:none;position:absolute;top:16px;right:16px;background:rgba(255,255,255,.18);color:#fff;
-    border:1px solid rgba(255,255,255,.5);border-radius:20px;font-size:11px;padding:5px 12px;cursor:pointer}
   header{position:relative}
   html.auth-locked,body.auth-locked{overflow:hidden}
   /* ▲▲ 会員登録・ログインゲート ▲▲ */
@@ -244,7 +242,6 @@
   </div>
   <div class="read">マクロハック</div>
   <p class="tagline">コンビニの商品で、狙ったPFCバランスを組む</p>
-  <button type="button" class="logout-btn" id="logoutBtn">ログアウト</button>
 </header>
 
 <div class="wrap">
@@ -825,6 +822,35 @@ function renderLibrary(){
     const f=loadArr(FAV_KEY); f.splice(+b.dataset.idx,1); saveArr(FAV_KEY,f); renderLibrary(); }));
 }
 
+/* ============ ヘッダーメニュー（header-menu.js）向け：お気に入り・履歴の描画 ============ */
+function mhMenuRenderList(container, key, isFav){
+  const arr=loadArr(key);
+  if(!arr.length){
+    container.innerHTML=`<div class="mh-menu-empty">${isFav?"まだ保存された提案はありません":"まだ表示した提案の履歴はありません"}</div>`;
+    return;
+  }
+  container.innerHTML="";
+  arr.forEach((snap,idx)=>{ const s=summarize(snap); const row=document.createElement("div"); row.className="saved";
+    row.innerHTML=`<div class="sg">${s.label}</div>
+      <div class="sinfo"><div class="st">¥${s.price} ・ ${s.cal}kcal ・ P${s.p} F${s.f} C${s.c}</div>
+      <div class="sd">${s.names} <span style="opacity:.7">（${fmtDate(snap.ts)}）</span></div></div>
+      ${isFav?`<button class="sdel" data-idx="${idx}" title="削除">×</button>`:""}`;
+    row.addEventListener("click",e=>{
+      if(e.target.classList.contains("sdel"))return;
+      if(window.MH_MENU_CLOSE) window.MH_MENU_CLOSE();
+      loadSnap(snap);
+    });
+    container.appendChild(row); });
+  if(isFav) container.querySelectorAll(".sdel").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation();
+    const f=loadArr(FAV_KEY); f.splice(+b.dataset.idx,1); saveArr(FAV_KEY,f);
+    mhMenuRenderList(container,FAV_KEY,true); renderLibrary(); }));
+}
+window.MH_MENU_HOOKS = {
+  renderFavorites: function(container){ mhMenuRenderList(container, FAV_KEY, true); },
+  renderHistory: function(container){ mhMenuRenderList(container, HIST_KEY, false); }
+};
+
 /* ============ 今日の合計 ============ */
 function getDay(){ const c=window.__mhCloud; let d=c?c.day:null; if(!d||d.date!==todayTag()) d={date:todayTag(),meals:[]}; return d; }
 function saveDay(d){ const c=window.__mhCloud; if(!c) return; c.day=d; if(window.__mhCloudSave) window.__mhCloudSave({day:d}); }
@@ -1034,7 +1060,6 @@ const authTabSignup = document.getElementById("authTabSignup");
 const authGoogleBtn = document.getElementById("authGoogleBtn");
 const authSwitchLink = document.getElementById("authSwitchLink");
 const authSwitchText = document.getElementById("authSwitchText");
-const logoutBtn = document.getElementById("logoutBtn");
 
 let authMode = "login";
 
@@ -1096,7 +1121,9 @@ authGoogleBtn.addEventListener("click", async ()=>{
   }
 });
 
-logoutBtn.addEventListener("click", ()=> signOut(auth));
+// ヘッダーメニュー（header-menu.js）からログイン／ログアウトを呼び出すための橋渡し。
+window.MH_OPEN_LOGIN = function(){ setAuthMode("login"); openGate(); };
+window.MH_LOGOUT = function(){ signOut(auth); };
 
 let currentUser = null;
 let pendingAction = null;
@@ -1141,7 +1168,8 @@ document.addEventListener("click", (e)=>{
 
 onAuthStateChanged(auth, (user)=>{
   currentUser = user;
-  logoutBtn.style.display = user ? "block" : "none";
+  window.MH_AUTH_STATE = { loggedIn: !!user, name: user ? (user.email || "ログイン中") : "" };
+  window.dispatchEvent(new Event("mh:auth-changed"));
   if(unsubscribeCloud){ unsubscribeCloud(); unsubscribeCloud = null; }
   if(user){
     connectCloud(user.uid);
@@ -1159,5 +1187,7 @@ onAuthStateChanged(auth, (user)=>{
 });
 </script>
 <!-- ▲▲ 会員登録・ログイン処理 ▲▲ -->
+<script src="header-menu.js"></script>
+<script src="pwa-update-check.js"></script>
 </body>
 </html>
