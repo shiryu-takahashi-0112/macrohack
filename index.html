@@ -995,6 +995,35 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.s
 </script>
 <!-- ▲▲ Cloudflare Web Analytics ▲▲ -->
 
+<!-- ▼▼ GA4（Google Analytics 4）計測タグ（Shiryuさん本人のテストアクセスは除外） ▼▼ -->
+<!-- 測定ID: G-1CHR0L4Y23。/api/is-admin（_worker.js）でisAdmin判定し、管理者IPの場合はgtagを読み込まない。
+     /api/is-adminが未反映・エラー時はfail-open（通常どおり計測する）。Cloudflare Web Analyticsと同じ除外方式を踏襲。 -->
+<script>
+(function(){
+  var GA_MEASUREMENT_ID = 'G-1CHR0L4Y23';
+  function loadGtag(){
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_MEASUREMENT_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', GA_MEASUREMENT_ID);
+  }
+  fetch('/api/is-admin', {cache:"no-store"}).then(function(r){
+    if(!r.ok) throw new Error("is-admin not ok");
+    return r.json();
+  }).then(function(data){
+    if(!data.isAdmin) loadGtag();
+  }).catch(function(){
+    loadGtag();
+  });
+})();
+</script>
+<!-- ▲▲ GA4（Google Analytics 4）計測タグ ▲▲ -->
+
 <!-- ▼▼ 会員登録・ログイン処理（Firebase Authentication） ▼▼ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
