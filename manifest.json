@@ -1,7 +1,7 @@
 {
   "name": "MACROHACK（マクロハック）",
   "short_name": "MACROHACK",
-  "description": "セブンの商品で狙ったPFCバランスを組む、筋トレ飯提案アプリ。",
+  "description": "コンビニの商品で狙ったPFCバランスを組む、筋トレ飯提案アプリ。",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
